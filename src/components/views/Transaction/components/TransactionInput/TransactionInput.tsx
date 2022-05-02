@@ -1,0 +1,109 @@
+import { toADA } from '@/utils/crypto';
+import { hex2a, truncateString } from '@/utils/strings';
+import {
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
+  Badge,
+  Box,
+  Heading,
+  Stat,
+  StatNumber,
+  Tag,
+  Text,
+} from '@chakra-ui/react';
+import Link from 'next/link';
+
+interface TransactionInputProps {
+  address: string;
+  txIndex: number;
+  amount: { quantity: string; unit: string }[];
+  txHash?: string;
+  datumHash?: string | null;
+}
+
+const TransactionInput: React.FC<TransactionInputProps> = ({
+  address,
+  txHash,
+  txIndex,
+  amount,
+  datumHash,
+}) => {
+  const lovelace =
+    amount.find(({ unit }) => unit === 'lovelace')?.quantity || '0';
+  const filteredAmount = amount.filter(({ unit }) => unit !== 'lovelace');
+
+  return (
+    <Box border={'1px'} borderColor="gray.700" my={'2'} borderRadius={'md'}>
+      <Box p="4">
+        <Stat mb={'1'}>
+          <StatNumber as="code">
+            {toADA(lovelace)}
+            <Text as="code" fontSize={'sm'} color="gray.400" ml={'1'}>
+              ADA
+            </Text>
+          </StatNumber>
+        </Stat>
+
+        <Heading size={'sm'}>
+          <Link href={`/address/${address}`} passHref>
+            <a>
+              <Text
+                as="code"
+                textColor={'purple.400'}
+                _hover={{ textColor: 'purple.300' }}
+              >
+                {truncateString(address, 38, 'middle')}
+              </Text>
+            </a>
+          </Link>
+          {datumHash && (
+            <Tag colorScheme={'pink'} size="sm" ml={'2'}>
+              Script
+            </Tag>
+          )}
+        </Heading>
+
+        {txHash && (
+          <Text
+            as="code"
+            fontSize="xs"
+            color={'gray.500'}
+            mt="2"
+            _hover={{ textDecor: 'underline' }}
+          >
+            <Link href={`/transaction/${txHash}`}>
+              <a>
+                {truncateString(txHash, 38, 'middle')}#{txIndex}
+              </a>
+            </Link>
+          </Text>
+        )}
+      </Box>
+      {filteredAmount.length > 0 && (
+        <Accordion allowMultiple allowToggle>
+          <AccordionItem borderBottom={'none'}>
+            <div>
+              <AccordionButton>
+                <Text color={'gray.400'}>
+                  <b>{filteredAmount.length}</b> native tokens
+                </Text>
+                <AccordionIcon color={'gray.500'} />
+              </AccordionButton>
+            </div>
+            <AccordionPanel>
+              {filteredAmount.map(({ quantity, unit }) => (
+                <Badge key={unit} display="inline-block" m={'2'}>
+                  {quantity} {hex2a(unit.slice(56))}
+                </Badge>
+              ))}
+            </AccordionPanel>
+          </AccordionItem>
+        </Accordion>
+      )}
+    </Box>
+  );
+};
+export { TransactionInput };

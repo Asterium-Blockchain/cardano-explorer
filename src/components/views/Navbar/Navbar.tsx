@@ -1,9 +1,8 @@
 import useStore from '@/store/useStore';
-import { decodeType } from '@/utils/crypto/validation';
+import { decodeType, getUrlFromType } from '@/utils/crypto/validation';
 import { truncateString } from '@/utils/strings';
 import { SearchIcon } from '@chakra-ui/icons';
 import {
-  Box,
   Container,
   Flex,
   Heading,
@@ -12,22 +11,33 @@ import {
   InputLeftElement,
   Tag,
 } from '@chakra-ui/react';
-import { useEffect } from 'react';
+import { useClickAway } from 'ahooks';
+import Link from 'next/link';
+import { useEffect, useRef } from 'react';
 import { DebounceInput } from 'react-debounce-input';
 import SearchResult from './components/SearchResult';
 
 const Navbar = () => {
-  // Search
   const searchedVal = useStore((state) => state.searchedVal);
   const search = useStore((state) => state.search);
   const resetSearch = useStore((state) => state.resetSearch);
   const element = useStore((state) => state.element);
   const isLoadingSearch = useStore((state) => state.isLoadingSearch);
+  const toggleShowSearchElement = useStore(
+    (state) => state.toggleShowSearchElement,
+  );
+  const showSearchElement = useStore((state) => state.showSearchElement);
   const updateSearchVal = useStore((state) => state.updateSearchVal);
 
   const isLoadingAdaPrice = useStore((state) => state.isLoadingAdaPrice);
   const adaPrice = useStore((state) => state.adaPrice);
   const fetchAdaPrice = useStore((state) => state.fetchAdaPrice);
+
+  const clickAwayRef = useRef<HTMLAnchorElement>(null);
+
+  useClickAway(() => {
+    toggleShowSearchElement();
+  }, clickAwayRef);
 
   useEffect(() => {
     if (searchedVal.length) {
@@ -50,7 +60,11 @@ const Navbar = () => {
         display={'flex'}
         justifyContent="space-between"
       >
-        <Heading size={'md'}>ADAScan</Heading>
+        <Link href={'/'} passHref>
+          <a>
+            <Heading size={'md'}>ADAScan</Heading>
+          </a>
+        </Link>
 
         <Flex alignItems={'center'} gap={'1'} position="relative">
           <InputGroup>
@@ -71,17 +85,20 @@ const Navbar = () => {
               variant="filled"
               onChange={updateSearchVal}
             />
-            {isLoadingSearch ||
-              (element?.type && (
-                <SearchResult
-                  loading={isLoadingSearch}
-                  title={decodeType(element.type)}
-                  subtitle={truncateString(searchedVal, 48, 'middle') || ''}
-                />
-              ))}
+            {showSearchElement &&
+              (isLoadingSearch ||
+                (element?.type && (
+                  <SearchResult
+                    url={getUrlFromType(element.type, searchedVal) || '#'}
+                    loading={isLoadingSearch}
+                    title={decodeType(element.type)}
+                    subtitle={truncateString(searchedVal, 48, 'middle') || ''}
+                    ref={clickAwayRef}
+                  />
+                )))}
           </InputGroup>
         </Flex>
-        <Tag>ADA: ${isLoadingAdaPrice ? '...' : adaPrice}</Tag>
+        <Tag>ADA: ${isLoadingAdaPrice ? '.......' : adaPrice}</Tag>
       </Container>
     </Flex>
   );

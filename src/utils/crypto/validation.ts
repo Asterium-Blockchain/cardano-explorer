@@ -58,3 +58,20 @@ export const decodeType = (type: QueryType) => {
       return 'Unknown';
   }
 };
+
+export const getUrlFromType = (type: QueryType, value: string) => {
+  switch (type) {
+    case 'TX_HASH':
+      return '/transaction/' + value;
+    case 'POLICY_ID':
+      return '/policy/' + value;
+    case 'ASSET_ID':
+      return '/asset/' + value;
+    case 'ADDRESS':
+      return '/address/' + value;
+    case 'STAKE_KEY':
+      return '/stake/' + value;
+    default:
+      return null;
+  }
+};

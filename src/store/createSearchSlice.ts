@@ -8,10 +8,12 @@ export interface SearchSlice {
   searchedVal: string;
   element: SearchResponse | undefined;
   isLoadingSearch: boolean;
+  showSearchElement: boolean;
 
   updateSearchVal: (e: React.ChangeEvent<HTMLInputElement>) => void;
   search: () => Promise<void>;
   resetSearch: () => void;
+  toggleShowSearchElement: () => void;
 }
 
 const createSearchSlice = (
@@ -21,6 +23,7 @@ const createSearchSlice = (
   element: undefined,
   searchedVal: '',
   isLoadingSearch: false,
+  showSearchElement: true,
 
   updateSearchVal: (e: React.ChangeEvent<HTMLInputElement>) => {
     set((state) => ({ ...state, searchedVal: e.target.value }));
@@ -32,10 +35,18 @@ const createSearchSlice = (
         query: get().searchedVal,
       },
     });
-    set((state) => ({ ...state, element: data, isLoadingSearch: false }));
+    set((state) => ({
+      ...state,
+      element: data,
+      isLoadingSearch: false,
+      showSearchElement: true,
+    }));
   },
   resetSearch: () => {
     set((state) => ({ ...state, element: undefined }));
+  },
+  toggleShowSearchElement: () => {
+    set((state) => ({ ...state, showSearchElement: !state.showSearchElement }));
   },
 });
 

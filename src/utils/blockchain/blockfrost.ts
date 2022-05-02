@@ -2,8 +2,8 @@ import { BlockFrostAPI } from '@blockfrost/blockfrost-js';
 
 const apiKey = process.env.BLOCKFROST;
 
-const API = new BlockFrostAPI({
+const blockfrost = new BlockFrostAPI({
   projectId: apiKey || '',
 });
 
-export default API;
+export default blockfrost;
