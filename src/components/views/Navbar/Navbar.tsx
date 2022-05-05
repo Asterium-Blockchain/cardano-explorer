@@ -1,6 +1,4 @@
 import useStore from '@/store/useStore';
-import { decodeType, getUrlFromType } from '@/utils/crypto/validation';
-import { truncateString } from '@/utils/strings';
 import { SearchIcon } from '@chakra-ui/icons';
 import {
   Container,
@@ -9,13 +7,19 @@ import {
   Input,
   InputGroup,
   InputLeftElement,
+  Skeleton,
+  SkeletonText,
   Tag,
 } from '@chakra-ui/react';
 import { useClickAway } from 'ahooks';
 import Link from 'next/link';
 import { useEffect, useRef } from 'react';
 import { DebounceInput } from 'react-debounce-input';
+
 import SearchResult from './components/SearchResult';
+import { decodeType, getUrlFromType } from '@/utils/crypto/validation';
+import { truncateString } from '@/utils/strings';
+import useAdaPrice from '@/hooks/useAdaPrice';
 
 const Navbar = () => {
   const searchedVal = useStore((state) => state.searchedVal);
@@ -29,9 +33,7 @@ const Navbar = () => {
   const showSearchElement = useStore((state) => state.showSearchElement);
   const updateSearchVal = useStore((state) => state.updateSearchVal);
 
-  const isLoadingAdaPrice = useStore((state) => state.isLoadingAdaPrice);
-  const adaPrice = useStore((state) => state.adaPrice);
-  const fetchAdaPrice = useStore((state) => state.fetchAdaPrice);
+  const adaPrice = useAdaPrice();
 
   const clickAwayRef = useRef<HTMLAnchorElement>(null);
 
@@ -46,10 +48,6 @@ const Navbar = () => {
       resetSearch();
     }
   }, [searchedVal, search, resetSearch]);
-
-  useEffect(() => {
-    fetchAdaPrice();
-  }, [fetchAdaPrice]);
 
   return (
     <Flex borderBottom={'1px'} borderBottomColor="gray.700">
@@ -98,7 +96,14 @@ const Navbar = () => {
                 )))}
           </InputGroup>
         </Flex>
-        <Tag>ADA: ${isLoadingAdaPrice ? '.......' : adaPrice}</Tag>
+        <Tag>
+          ADA: $
+          {!adaPrice ? (
+            <SkeletonText width={16} height={2} ml="2" noOfLines={1} />
+          ) : (
+            adaPrice
+          )}
+        </Tag>
       </Container>
     </Flex>
   );

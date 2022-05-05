@@ -1,13 +1,25 @@
-import { Center, Container, Heading } from '@chakra-ui/react';
+import { GetStaticProps, NextPage } from 'next';
 
-const Home = () => {
-  return (
-    <Container py={'48'}>
-      <Center>
-        <Heading>Hello, world</Heading>
-      </Center>
-    </Container>
-  );
+import blockfrost from '@/utils/blockchain/blockfrost';
+import Home from '@/components/views/Home';
+
+export interface HomepageProps {
+  latestBlock: Awaited<ReturnType<typeof blockfrost.blocksLatest>>;
+}
+
+export const getStaticProps: GetStaticProps<HomepageProps> = async () => {
+  const latestBlock = await blockfrost.blocksLatest();
+
+  return {
+    props: {
+      latestBlock,
+    },
+    revalidate: 120,
+  };
 };
 
-export default Home;
+const HomePage: NextPage<HomepageProps> = (props) => {
+  return <Home {...props} />;
+};
+
+export default HomePage;

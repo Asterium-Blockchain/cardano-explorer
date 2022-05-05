@@ -4,22 +4,33 @@ import { AppState } from './useStore';
 
 export interface AdaPriceSlice {
   fetchAdaPrice: () => Promise<void>;
+  change24hs: number | null;
+  volume24hs: number | null;
   adaPrice: string | null;
-  isLoadingAdaPrice: boolean;
 }
 
 const createAdaPriceSlice = (set: SetState<AppState>) => ({
   adaPrice: null,
-  isLoadingAdaPrice: false,
+  change24hs: null,
+  volume24hs: null,
   fetchAdaPrice: async () => {
-    set((state) => ({ ...state, isLoadingAdaPrice: true }));
     const { data } = await axios.get(
-      'https://api.coingecko.com/api/v3/simple/price?ids=cardano&vs_currencies=usd',
+      'https://api.coingecko.com/api/v3/simple/price',
+      {
+        params: {
+          ids: 'cardano',
+          vs_currencies: 'usd',
+          include_24hr_vol: true,
+          include_24hr_change: true,
+          include_last_updated_at: true,
+        },
+      },
     );
     set((state) => ({
       ...state,
       adaPrice: data.cardano.usd,
-      isLoadingAdaPrice: false,
+      change24hs: data.cardano.usd_24h_change,
+      volume24hs: data.cardano.usd_24h_vol,
     }));
   },
 });

@@ -1,9 +1,8 @@
 import styles from './styles.module.scss';
 
 import React from 'react';
-import { Flex, theme, Box, Heading, Text } from '@chakra-ui/react';
+import { Flex, theme, Box, Heading, Text, Skeleton } from '@chakra-ui/react';
 import Link from 'next/link';
-import Skeleton from 'react-loading-skeleton';
 
 interface SearchResultProps {
   title: string;
@@ -33,7 +32,7 @@ const SearchResult = React.forwardRef<HTMLAnchorElement, SearchResultProps>(
             _hover={{ bgColor: 'gray.600' }}
           >
             {loading ? (
-              <Skeleton baseColor={theme.colors.gray[100]} />
+              <Skeleton />
             ) : (
               <Box as={'a'}>
                 <Heading as={'h3'} size="md">
