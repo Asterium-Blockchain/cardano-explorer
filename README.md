@@ -9,4 +9,4 @@ An open explorer for the Cardano blockchain
 
 ### Contributing
 
-Contributions are welcomed!
+Contributions are welcome!
