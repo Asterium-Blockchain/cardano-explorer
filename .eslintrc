@@ -48,7 +48,8 @@
           {
             "avoidEscape": true
           }
-        ]
+        ],
+        "no-console": "error"
       }
     }
   ]

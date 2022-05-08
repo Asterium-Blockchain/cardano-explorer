@@ -39,3 +39,18 @@ export function formatDuration(period: number) {
 
   return 'in ' + parts.join(', ');
 }
+
+export function hexToRgba(hex: string, alpha: number) {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  const rgba = result
+    ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16),
+        a: alpha,
+      }
+    : null;
+  if (rgba) {
+    return `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})`;
+  }
+}

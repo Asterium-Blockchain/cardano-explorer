@@ -11,7 +11,6 @@ const createBlockchainLoadSlice = (set: SetState<AppState>) => ({
   blockchainLoad: null,
   fetchBlockchainLoad: async () => {
     const { data } = await axios.get('https://pool.pm/total.json');
-    console.log(data);
 
     set((state) => ({
       ...state,

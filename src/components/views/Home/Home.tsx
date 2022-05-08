@@ -1,10 +1,12 @@
+import styles from './styles.module.scss';
+
 import { useMemo, useEffect } from 'react';
 
 import { EPOCH_DURATION } from '@/constants';
 import useAdaPrice from '@/hooks/useAdaPrice';
 import useCountdown from '@/hooks/useCountdown';
 import useLatestBlock from '@/hooks/useLatestBlock';
-import { formatDuration } from '@/utils/misc';
+import { formatDuration, hexToRgba } from '@/utils/misc';
 import {
   Container,
   Grid,
@@ -15,13 +17,18 @@ import {
   StatHelpText,
   StatArrow,
   Skeleton,
-  Flex,
   Spacer,
+  Icon,
+  Text,
 } from '@chakra-ui/react';
 import useStore from '@/store/useStore';
 import { HomepageProps } from '@/pages';
 import DailyTransactionsChart from './components/DailyTransactionsChart';
 import CompletionChart from './components/DailyTransactionsChart/CompletionChart';
+import { ChevronRightIcon } from '@chakra-ui/icons';
+import Link from 'next/link';
+import { Settings, Shuffle, Tablet, Tool } from 'react-feather';
+import theme from '@/theme';
 
 const Home: React.FC<HomepageProps> = ({
   latestBlock,
@@ -164,6 +171,51 @@ const Home: React.FC<HomepageProps> = ({
             completion={stakedAdaPercentage}
             title={'Staked ADA'}
           />
+        </GridItem>
+        <GridItem
+          colSpan={4}
+          rowSpan={2}
+          bgColor={hexToRgba(theme.colors.pink[500], 0.2)}
+          p={'6'}
+          borderRadius="md"
+        >
+          <Link href={'/transaction-builder'}>
+            <a className={styles.link}>
+              <Icon as={Tool} w={6} h={6} />
+              <Text fontSize="lg">Transaction builder</Text>
+              <ChevronRightIcon className={styles.animateOnLinkHover} />
+            </a>
+          </Link>
+        </GridItem>
+        <GridItem
+          colSpan={4}
+          rowSpan={2}
+          bgColor={hexToRgba(theme.colors.cyan[400], 0.1)}
+          p={'6'}
+          borderRadius="md"
+        >
+          <Link href={'/protocol-parameters'}>
+            <a className={styles.link}>
+              <Icon as={Settings} w={6} h={6} />
+              <Text fontSize="lg">Protocol parameters</Text>
+              <ChevronRightIcon className={styles.animateOnLinkHover} />
+            </a>
+          </Link>
+        </GridItem>
+        <GridItem
+          colSpan={4}
+          rowSpan={2}
+          bgColor={hexToRgba(theme.colors.green[400], 0.2)}
+          p={'6'}
+          borderRadius="md"
+        >
+          <Link href={'/transaction-builder'}>
+            <a className={styles.link}>
+              <Icon as={Tablet} w={6} h={6} />
+              <Text fontSize="lg">Pools</Text>
+              <ChevronRightIcon className={styles.animateOnLinkHover} />
+            </a>
+          </Link>
         </GridItem>
       </Grid>
     </Container>

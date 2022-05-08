@@ -1,0 +1,24 @@
+.link {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
+  height: 100%;
+  p {
+    transition: 300ms;
+  }
+
+  .animateOnLinkHover {
+    transition: 200ms;
+    width: 22px;
+    margin-left: auto;
+  }
+
+  &:hover .animateOnLinkHover {
+    transform: translateX(6px);
+  }
+
+  &:hover p {
+    transform: translateX(2px);
+  }
+}
