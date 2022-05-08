@@ -1,8 +1,8 @@
-import { Box, Flex, Heading, Text } from '@chakra-ui/react';
+import theme from '@/theme';
+import { Flex, Heading } from '@chakra-ui/react';
 import moment from 'moment';
 import { useMemo } from 'react';
 import {
-  LineChart,
   XAxis,
   YAxis,
   Line,
@@ -11,6 +11,8 @@ import {
   Area,
   AreaChart,
 } from 'recharts';
+
+import CustomTooltip from '@/components/shared/Tooltip';
 
 interface DailyTransactionsChartProps {
   dailyTransactions: any[];
@@ -49,8 +51,16 @@ const DailyTransactionsChart: React.FC<DailyTransactionsChartProps> = ({
         <AreaChart data={mappedData}>
           <defs>
             <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
-              <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
+              <stop
+                offset="5%"
+                stopColor={theme.colors.purple[300]}
+                stopOpacity={0.8}
+              />
+              <stop
+                offset="95%"
+                stopColor={theme.colors.purple[300]}
+                stopOpacity={0}
+              />
             </linearGradient>
           </defs>
           <XAxis dataKey={'day'} padding={{ left: 24, right: 24 }} />
@@ -58,35 +68,18 @@ const DailyTransactionsChart: React.FC<DailyTransactionsChartProps> = ({
           <Line
             type="monotone"
             dataKey="count"
-            stroke="#8884d8"
+            stroke={theme.colors.purple[300]}
             animationDuration={100}
           />
           <Tooltip
-            content={({ active, payload }) =>
-              active && payload?.length ? (
-                <Box
-                  p="3"
-                  border={'1px'}
-                  borderRadius="md"
-                  borderColor={'gray.600'}
-                >
-                  <Text fontSize="sm" fontWeight={'bold'}>
-                    Transaction count:{' '}
-                    <Text fontSize="xs" fontWeight={'medium'}>
-                      {parseInt(
-                        payload[0].value!.toString(),
-                        10,
-                      ).toLocaleString()}
-                    </Text>
-                  </Text>
-                </Box>
-              ) : null
-            }
+            content={({ active, payload }) => (
+              <CustomTooltip active={active} payload={payload} />
+            )}
           />
           <Area
             type="monotone"
             dataKey="count"
-            stroke="#8884d8"
+            stroke={theme.colors.purple[300]}
             strokeWidth={2}
             fillOpacity={0.4}
             fill="url(#colorUv)"

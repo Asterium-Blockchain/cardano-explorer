@@ -3,10 +3,12 @@ import { GetStaticProps, NextPage } from 'next';
 import blockfrost from '@/utils/blockchain/blockfrost';
 import Home from '@/components/views/Home';
 import prisma from 'prisma/client';
+import axios from 'axios';
 
 export interface HomepageProps {
   latestBlock: Awaited<ReturnType<typeof blockfrost.blocksLatest>>;
   dailyTransactions: any[];
+  stakedAdaPercentage: number;
 }
 
 export const getStaticProps: GetStaticProps<HomepageProps> = async () => {
@@ -26,10 +28,14 @@ export const getStaticProps: GetStaticProps<HomepageProps> = async () => {
     LIMIT 10;
   `) as any;
 
+  const { data } = await axios.get('https://pool.pm/total.json');
+  const { supply, stake } = data;
+
   return {
     props: {
       latestBlock,
       dailyTransactions,
+      stakedAdaPercentage: stake / supply,
     },
     revalidate: 120,
   };

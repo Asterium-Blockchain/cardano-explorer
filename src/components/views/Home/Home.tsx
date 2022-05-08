@@ -16,12 +16,18 @@ import {
   StatArrow,
   Skeleton,
   Flex,
+  Spacer,
 } from '@chakra-ui/react';
 import useStore from '@/store/useStore';
 import { HomepageProps } from '@/pages';
 import DailyTransactionsChart from './components/DailyTransactionsChart';
+import CompletionChart from './components/DailyTransactionsChart/CompletionChart';
 
-const Home: React.FC<HomepageProps> = ({ latestBlock, dailyTransactions }) => {
+const Home: React.FC<HomepageProps> = ({
+  latestBlock,
+  dailyTransactions,
+  stakedAdaPercentage,
+}) => {
   const adaPrice = useAdaPrice();
   const realtimeLatestBlock = useLatestBlock();
 
@@ -148,7 +154,17 @@ const Home: React.FC<HomepageProps> = ({ latestBlock, dailyTransactions }) => {
           borderColor={'gray.600'}
           p={'6'}
           borderRadius="md"
-        ></GridItem>
+        >
+          <CompletionChart
+            completion={stakedAdaPercentage}
+            title={'Staked ADA'}
+          />
+          <Spacer height={'5'} />
+          <CompletionChart
+            completion={stakedAdaPercentage}
+            title={'Staked ADA'}
+          />
+        </GridItem>
       </Grid>
     </Container>
   );
