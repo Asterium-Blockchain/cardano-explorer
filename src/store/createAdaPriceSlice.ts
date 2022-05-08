@@ -13,6 +13,7 @@ const createAdaPriceSlice = (set: SetState<AppState>) => ({
   adaPrice: null,
   change24hs: null,
   volume24hs: null,
+  interval: null,
   fetchAdaPrice: async () => {
     const { data } = await axios.get(
       'https://api.coingecko.com/api/v3/simple/price',

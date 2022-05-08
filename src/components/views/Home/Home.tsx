@@ -15,11 +15,13 @@ import {
   StatHelpText,
   StatArrow,
   Skeleton,
+  Flex,
 } from '@chakra-ui/react';
 import useStore from '@/store/useStore';
 import { HomepageProps } from '@/pages';
+import DailyTransactionsChart from './components/DailyTransactionsChart';
 
-const Home: React.FC<HomepageProps> = ({ latestBlock }) => {
+const Home: React.FC<HomepageProps> = ({ latestBlock, dailyTransactions }) => {
   const adaPrice = useAdaPrice();
   const realtimeLatestBlock = useLatestBlock();
 
@@ -61,6 +63,7 @@ const Home: React.FC<HomepageProps> = ({ latestBlock }) => {
         templateRows={'repeat(12, 1fr)'}
         templateColumns={'repeat(12, 1fr)'}
         gap="6"
+        my={4}
       >
         <GridItem
           colSpan={3}
@@ -135,6 +138,17 @@ const Home: React.FC<HomepageProps> = ({ latestBlock }) => {
             </StatNumber>
           </Stat>
         </GridItem>
+        <GridItem colSpan={9} rowSpan={9}>
+          <DailyTransactionsChart dailyTransactions={dailyTransactions} />
+        </GridItem>
+        <GridItem
+          colSpan={3}
+          rowSpan={9}
+          border="1px"
+          borderColor={'gray.600'}
+          p={'6'}
+          borderRadius="md"
+        ></GridItem>
       </Grid>
     </Container>
   );

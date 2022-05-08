@@ -1,0 +1,714 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model ada_pots {
+  id       BigInt  @id @default(dbgenerated("nextval('ada_pots_id_seq'::regclass)"))
+  slot_no  Int
+  epoch_no Int
+  treasury Decimal @db.Decimal(20, 0)
+  reserves Decimal @db.Decimal(20, 0)
+  rewards  Decimal @db.Decimal(20, 0)
+  utxo     Decimal @db.Decimal(20, 0)
+  deposits Decimal @db.Decimal(20, 0)
+  fees     Decimal @db.Decimal(20, 0)
+  block_id BigInt  @unique(map: "unique_ada_pots")
+  block    block   @relation(fields: [block_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+}
+
+model admin_user {
+  id       BigInt @id @default(dbgenerated("nextval('admin_user_id_seq'::regclass)"))
+  username String @unique(map: "unique_admin_user") @db.VarChar
+  password String @db.VarChar
+}
+
+model block {
+  id              BigInt        @id @default(dbgenerated("nextval('block_id_seq'::regclass)"))
+  hash            Bytes         @unique(map: "unique_block")
+  epoch_no        Int?
+  slot_no         Int?
+  epoch_slot_no   Int?
+  block_no        Int?
+  previous_id     BigInt?
+  slot_leader_id  BigInt
+  size            Int
+  time            DateTime      @db.Timestamp(6)
+  tx_count        BigInt
+  proto_major     Int
+  proto_minor     Int
+  vrf_key         String?       @db.VarChar
+  op_cert         Bytes?
+  op_cert_counter BigInt?
+  block           block?        @relation("blockToblock_previous_id", fields: [previous_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  slot_leader     slot_leader   @relation(fields: [slot_leader_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  ada_pots        ada_pots?
+  other_block     block[]       @relation("blockToblock_previous_id")
+  cost_model      cost_model[]
+  epoch_param     epoch_param[]
+  tx              tx[]
+
+  @@index([block_no], map: "idx_block_block_no")
+  @@index([epoch_no], map: "idx_block_epoch_no")
+  @@index([previous_id], map: "idx_block_previous_id")
+  @@index([slot_leader_id], map: "idx_block_slot_leader_id")
+  @@index([slot_no], map: "idx_block_slot_no")
+  @@index([time], map: "idx_block_time")
+}
+
+model collateral_tx_in {
+  id                                BigInt @id @default(dbgenerated("nextval('collateral_tx_in_id_seq'::regclass)"))
+  tx_in_id                          BigInt
+  tx_out_id                         BigInt
+  tx_out_index                      Int    @db.SmallInt
+  tx_collateral_tx_in_tx_in_idTotx  tx     @relation("collateral_tx_in_tx_in_idTotx", fields: [tx_in_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  tx_collateral_tx_in_tx_out_idTotx tx     @relation("collateral_tx_in_tx_out_idTotx", fields: [tx_out_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@unique([tx_in_id, tx_out_id, tx_out_index], map: "unique_col_txin")
+  @@index([tx_out_id], map: "idx_collateral_tx_in_tx_out_id")
+}
+
+model cost_model {
+  id             BigInt           @id @default(dbgenerated("nextval('cost_model_id_seq'::regclass)"))
+  costs          Json             @unique(map: "unique_cost_model")
+  block_id       BigInt
+  block          block            @relation(fields: [block_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  epoch_param    epoch_param[]
+  param_proposal param_proposal[]
+}
+
+model datum {
+  id       BigInt     @id @default(dbgenerated("nextval('datum_id_seq'::regclass)"))
+  hash     Bytes      @unique(map: "unique_data")
+  tx_id    BigInt
+  value    Json?
+  tx       tx         @relation(fields: [tx_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  redeemer redeemer[]
+}
+
+model delegation {
+  id              BigInt        @id @default(dbgenerated("nextval('delegation_id_seq'::regclass)"))
+  addr_id         BigInt
+  cert_index      Int
+  pool_hash_id    BigInt
+  active_epoch_no BigInt
+  tx_id           BigInt
+  slot_no         Int
+  redeemer_id     BigInt?
+  stake_address   stake_address @relation(fields: [addr_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  pool_hash       pool_hash     @relation(fields: [pool_hash_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  redeemer        redeemer?     @relation(fields: [redeemer_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  tx              tx            @relation(fields: [tx_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@unique([addr_id, pool_hash_id, tx_id], map: "unique_delegation")
+  @@index([active_epoch_no], map: "idx_delegation_active_epoch_no")
+  @@index([addr_id], map: "idx_delegation_addr_id")
+  @@index([pool_hash_id], map: "idx_delegation_pool_hash_id")
+  @@index([redeemer_id], map: "idx_delegation_redeemer_id")
+  @@index([tx_id], map: "idx_delegation_tx_id")
+}
+
+model delisted_pool {
+  id       BigInt @id @default(dbgenerated("nextval('delisted_pool_id_seq'::regclass)"))
+  hash_raw Bytes  @unique(map: "unique_delisted_pool")
+}
+
+model epoch {
+  id         BigInt   @id @default(dbgenerated("nextval('epoch_id_seq'::regclass)"))
+  out_sum    Decimal  @db.Decimal(39, 0)
+  fees       Decimal  @db.Decimal(20, 0)
+  tx_count   Int
+  blk_count  Int
+  no         Int      @unique(map: "unique_epoch")
+  start_time DateTime @db.Timestamp(6)
+  end_time   DateTime @db.Timestamp(6)
+
+  @@index([no], map: "idx_epoch_no")
+}
+
+model epoch_param {
+  id                    BigInt      @id @default(dbgenerated("nextval('epoch_param_id_seq'::regclass)"))
+  epoch_no              Int
+  min_fee_a             Int
+  min_fee_b             Int
+  max_block_size        Int
+  max_tx_size           Int
+  max_bh_size           Int
+  key_deposit           Decimal     @db.Decimal(20, 0)
+  pool_deposit          Decimal     @db.Decimal(20, 0)
+  max_epoch             Int
+  optimal_pool_count    Int
+  influence             Float
+  monetary_expand_rate  Float
+  treasury_growth_rate  Float
+  decentralisation      Float
+  entropy               Bytes?
+  protocol_major        Int
+  protocol_minor        Int
+  min_utxo_value        Decimal     @db.Decimal(20, 0)
+  min_pool_cost         Decimal     @db.Decimal(20, 0)
+  nonce                 Bytes?
+  coins_per_utxo_word   Decimal?    @db.Decimal(20, 0)
+  cost_model_id         BigInt?
+  price_mem             Float?
+  price_step            Float?
+  max_tx_ex_mem         Decimal?    @db.Decimal(20, 0)
+  max_tx_ex_steps       Decimal?    @db.Decimal(20, 0)
+  max_block_ex_mem      Decimal?    @db.Decimal(20, 0)
+  max_block_ex_steps    Decimal?    @db.Decimal(20, 0)
+  max_val_size          Decimal?    @db.Decimal(20, 0)
+  collateral_percent    Int?
+  max_collateral_inputs Int?
+  block_id              BigInt
+  block                 block       @relation(fields: [block_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  cost_model            cost_model? @relation(fields: [cost_model_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@unique([epoch_no, block_id], map: "unique_epoch_param")
+  @@index([block_id], map: "idx_epoch_param_block_id")
+}
+
+model epoch_reward_total_received {
+  id           BigInt  @id @default(dbgenerated("nextval('epoch_reward_total_received_id_seq'::regclass)"))
+  earned_epoch Int     @unique(map: "unique_epoch_reward_total_received")
+  amount       Decimal @db.Decimal(20, 0)
+}
+
+model epoch_stake {
+  id            BigInt        @id @default(dbgenerated("nextval('epoch_stake_id_seq'::regclass)"))
+  addr_id       BigInt
+  pool_id       BigInt
+  amount        Decimal       @db.Decimal(20, 0)
+  epoch_no      Int
+  stake_address stake_address @relation(fields: [addr_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  pool_hash     pool_hash     @relation(fields: [pool_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@unique([epoch_no, addr_id, pool_id], map: "unique_stake")
+  @@index([addr_id], map: "idx_epoch_stake_addr_id")
+  @@index([epoch_no], map: "idx_epoch_stake_epoch_no")
+  @@index([pool_id], map: "idx_epoch_stake_pool_id")
+}
+
+model epoch_sync_time {
+  id      BigInt        @id @default(dbgenerated("nextval('epoch_sync_time_id_seq'::regclass)"))
+  no      BigInt        @unique(map: "unique_epoch_sync_time")
+  seconds BigInt
+  state   syncstatetype
+}
+
+model ma_tx_mint {
+  id          BigInt      @id @default(dbgenerated("nextval('ma_tx_mint_id_seq'::regclass)"))
+  quantity    Decimal     @db.Decimal(20, 0)
+  tx_id       BigInt
+  ident       BigInt
+  multi_asset multi_asset @relation(fields: [ident], references: [id], onUpdate: Restrict)
+  tx          tx          @relation(fields: [tx_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@unique([ident, tx_id], map: "unique_ma_tx_mint")
+  @@index([tx_id], map: "idx_ma_tx_mint_tx_id")
+}
+
+model ma_tx_out {
+  id          BigInt      @id @default(dbgenerated("nextval('ma_tx_out_id_seq'::regclass)"))
+  quantity    Decimal     @db.Decimal(20, 0)
+  tx_out_id   BigInt
+  ident       BigInt
+  multi_asset multi_asset @relation(fields: [ident], references: [id], onUpdate: Restrict)
+  tx_out      tx_out      @relation(fields: [tx_out_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@unique([ident, tx_out_id], map: "unique_ma_tx_out")
+  @@index([tx_out_id], map: "idx_ma_tx_out_tx_out_id")
+}
+
+model meta {
+  id           BigInt   @id @default(dbgenerated("nextval('meta_id_seq'::regclass)"))
+  start_time   DateTime @unique(map: "unique_meta") @db.Timestamp(6)
+  network_name String   @db.VarChar
+  version      String   @db.VarChar
+}
+
+model multi_asset {
+  id          BigInt       @id @default(dbgenerated("nextval('multi_asset_id_seq'::regclass)"))
+  policy      Bytes
+  name        Bytes
+  fingerprint String       @db.VarChar
+  ma_tx_mint  ma_tx_mint[]
+  ma_tx_out   ma_tx_out[]
+
+  @@unique([policy, name], map: "unique_multi_asset")
+}
+
+model param_proposal {
+  id                    BigInt      @id @default(dbgenerated("nextval('param_proposal_id_seq'::regclass)"))
+  epoch_no              Int
+  key                   Bytes
+  min_fee_a             Decimal?    @db.Decimal(20, 0)
+  min_fee_b             Decimal?    @db.Decimal(20, 0)
+  max_block_size        Decimal?    @db.Decimal(20, 0)
+  max_tx_size           Decimal?    @db.Decimal(20, 0)
+  max_bh_size           Decimal?    @db.Decimal(20, 0)
+  key_deposit           Decimal?    @db.Decimal(20, 0)
+  pool_deposit          Decimal?    @db.Decimal(20, 0)
+  max_epoch             Decimal?    @db.Decimal(20, 0)
+  optimal_pool_count    Decimal?    @db.Decimal(20, 0)
+  influence             Float?
+  monetary_expand_rate  Float?
+  treasury_growth_rate  Float?
+  decentralisation      Float?
+  entropy               Bytes?
+  protocol_major        Int?
+  protocol_minor        Int?
+  min_utxo_value        Decimal?    @db.Decimal(20, 0)
+  min_pool_cost         Decimal?    @db.Decimal(20, 0)
+  coins_per_utxo_word   Decimal?    @db.Decimal(20, 0)
+  cost_model_id         BigInt?
+  price_mem             Float?
+  price_step            Float?
+  max_tx_ex_mem         Decimal?    @db.Decimal(20, 0)
+  max_tx_ex_steps       Decimal?    @db.Decimal(20, 0)
+  max_block_ex_mem      Decimal?    @db.Decimal(20, 0)
+  max_block_ex_steps    Decimal?    @db.Decimal(20, 0)
+  max_val_size          Decimal?    @db.Decimal(20, 0)
+  collateral_percent    Int?
+  max_collateral_inputs Int?
+  registered_tx_id      BigInt
+  cost_model            cost_model? @relation(fields: [cost_model_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  tx                    tx          @relation(fields: [registered_tx_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@unique([key, registered_tx_id], map: "unique_param_proposal")
+  @@index([registered_tx_id], map: "idx_param_proposal_registered_tx_id")
+}
+
+model pool_hash {
+  id                       BigInt                     @id @default(dbgenerated("nextval('pool_hash_id_seq'::regclass)"))
+  hash_raw                 Bytes                      @unique(map: "unique_pool_hash")
+  view                     String                     @db.VarChar
+  delegation               delegation[]
+  epoch_stake              epoch_stake[]
+  pool_metadata_ref        pool_metadata_ref[]
+  pool_offline_data        pool_offline_data[]
+  pool_offline_fetch_error pool_offline_fetch_error[]
+  pool_owner               pool_owner[]
+  pool_retire              pool_retire[]
+  pool_update              pool_update[]
+  reward                   reward[]
+  slot_leader              slot_leader[]
+}
+
+model pool_metadata_ref {
+  id                       BigInt                     @id @default(dbgenerated("nextval('pool_metadata_ref_id_seq'::regclass)"))
+  pool_id                  BigInt
+  url                      String                     @db.VarChar
+  hash                     Bytes
+  registered_tx_id         BigInt
+  pool_hash                pool_hash                  @relation(fields: [pool_id], references: [id], onUpdate: Restrict)
+  tx                       tx                         @relation(fields: [registered_tx_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  pool_offline_data        pool_offline_data[]
+  pool_offline_fetch_error pool_offline_fetch_error[]
+  pool_update              pool_update[]
+
+  @@unique([pool_id, url, hash], map: "unique_pool_metadata_ref")
+  @@index([registered_tx_id], map: "idx_pool_metadata_ref_registered_tx_id")
+}
+
+model pool_offline_data {
+  id                BigInt            @id @default(dbgenerated("nextval('pool_offline_data_id_seq'::regclass)"))
+  pool_id           BigInt
+  ticker_name       String            @db.VarChar
+  hash              Bytes
+  json              Json
+  bytes             Bytes
+  pmr_id            BigInt
+  pool_metadata_ref pool_metadata_ref @relation(fields: [pmr_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  pool_hash         pool_hash         @relation(fields: [pool_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@unique([pool_id, hash], map: "unique_pool_offline_data")
+  @@index([pmr_id], map: "idx_pool_offline_data_pmr_id")
+}
+
+model pool_offline_fetch_error {
+  id                BigInt            @id @default(dbgenerated("nextval('pool_offline_fetch_error_id_seq'::regclass)"))
+  pool_id           BigInt
+  fetch_time        DateTime          @db.Timestamp(6)
+  pmr_id            BigInt
+  fetch_error       String            @db.VarChar
+  retry_count       Int
+  pool_metadata_ref pool_metadata_ref @relation(fields: [pmr_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  pool_hash         pool_hash         @relation(fields: [pool_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@unique([pool_id, fetch_time, retry_count], map: "unique_pool_offline_fetch_error")
+  @@index([pmr_id], map: "idx_pool_offline_fetch_error_pmr_id")
+}
+
+model pool_owner {
+  id               BigInt        @id @default(dbgenerated("nextval('pool_owner_id_seq'::regclass)"))
+  addr_id          BigInt
+  pool_hash_id     BigInt
+  registered_tx_id BigInt
+  stake_address    stake_address @relation(fields: [addr_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  pool_hash        pool_hash     @relation(fields: [pool_hash_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  tx               tx            @relation(fields: [registered_tx_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@unique([addr_id, pool_hash_id, registered_tx_id], map: "unique_pool_owner")
+  @@index([pool_hash_id], map: "idx_pool_owner_pool_hash_id")
+  @@index([registered_tx_id], map: "idx_pool_owner_registered_tx_id")
+}
+
+model pool_relay {
+  id           BigInt      @id @default(dbgenerated("nextval('pool_relay_id_seq'::regclass)"))
+  update_id    BigInt
+  ipv4         String?     @db.VarChar
+  ipv6         String?     @db.VarChar
+  dns_name     String?     @db.VarChar
+  dns_srv_name String?     @db.VarChar
+  port         Int?
+  pool_update  pool_update @relation(fields: [update_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@unique([update_id, ipv4, ipv6, dns_name], map: "unique_pool_relay")
+  @@index([update_id], map: "idx_pool_relay_update_id")
+}
+
+model pool_retire {
+  id              BigInt    @id @default(dbgenerated("nextval('pool_retire_id_seq'::regclass)"))
+  hash_id         BigInt
+  cert_index      Int
+  announced_tx_id BigInt
+  retiring_epoch  Int
+  tx              tx        @relation(fields: [announced_tx_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  pool_hash       pool_hash @relation(fields: [hash_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@unique([hash_id, announced_tx_id], map: "unique_pool_retiring")
+  @@index([announced_tx_id], map: "idx_pool_retire_announced_tx_id")
+  @@index([hash_id], map: "idx_pool_retire_hash_id")
+}
+
+model pool_update {
+  id                BigInt             @id @default(dbgenerated("nextval('pool_update_id_seq'::regclass)"))
+  hash_id           BigInt
+  cert_index        Int
+  vrf_key_hash      Bytes
+  pledge            Decimal            @db.Decimal(20, 0)
+  reward_addr       Bytes
+  active_epoch_no   BigInt
+  meta_id           BigInt?
+  margin            Float
+  fixed_cost        Decimal            @db.Decimal(20, 0)
+  registered_tx_id  BigInt
+  pool_hash         pool_hash          @relation(fields: [hash_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  pool_metadata_ref pool_metadata_ref? @relation(fields: [meta_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  tx                tx                 @relation(fields: [registered_tx_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  pool_relay        pool_relay[]
+
+  @@unique([hash_id, registered_tx_id], map: "unique_pool_update")
+  @@index([active_epoch_no], map: "idx_pool_update_active_epoch_no")
+  @@index([hash_id], map: "idx_pool_update_hash_id")
+  @@index([meta_id], map: "idx_pool_update_meta_id")
+  @@index([registered_tx_id], map: "idx_pool_update_registered_tx_id")
+  @@index([reward_addr], map: "idx_pool_update_reward_addr")
+}
+
+model pot_transfer {
+  id         BigInt  @id @default(dbgenerated("nextval('pot_transfer_id_seq'::regclass)"))
+  cert_index Int
+  treasury   Decimal @db.Decimal(20, 0)
+  reserves   Decimal @db.Decimal(20, 0)
+  tx_id      BigInt
+  tx         tx      @relation(fields: [tx_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@unique([tx_id, cert_index], map: "unique_pot_transfer")
+}
+
+model redeemer {
+  id                   BigInt                 @id @default(dbgenerated("nextval('redeemer_id_seq'::regclass)"))
+  tx_id                BigInt
+  unit_mem             BigInt
+  unit_steps           BigInt
+  fee                  Decimal                @db.Decimal(20, 0)
+  purpose              scriptpurposetype
+  index                Int
+  script_hash          Bytes?
+  datum_id             BigInt
+  datum                datum                  @relation(fields: [datum_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  tx                   tx                     @relation(fields: [tx_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  delegation           delegation[]
+  stake_deregistration stake_deregistration[]
+  tx_in                tx_in[]
+  withdrawal           withdrawal[]
+
+  @@unique([tx_id, purpose, index], map: "unique_redeemer")
+}
+
+model reserve {
+  id            BigInt        @id @default(dbgenerated("nextval('reserve_id_seq'::regclass)"))
+  addr_id       BigInt
+  cert_index    Int
+  amount        Decimal       @db.Decimal(20, 0)
+  tx_id         BigInt
+  stake_address stake_address @relation(fields: [addr_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  tx            tx            @relation(fields: [tx_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@unique([addr_id, tx_id], map: "unique_reserves")
+  @@index([addr_id], map: "idx_reserve_addr_id")
+  @@index([tx_id], map: "idx_reserve_tx_id")
+}
+
+model reserved_pool_ticker {
+  id        BigInt @id @default(dbgenerated("nextval('reserved_pool_ticker_id_seq'::regclass)"))
+  name      String @unique(map: "unique_reserved_pool_ticker") @db.VarChar
+  pool_hash Bytes
+
+  @@index([pool_hash], map: "idx_reserved_pool_ticker_pool_hash")
+}
+
+model reward {
+  id              BigInt        @id @default(dbgenerated("nextval('reward_id_seq'::regclass)"))
+  addr_id         BigInt
+  type            rewardtype
+  amount          Decimal       @db.Decimal(20, 0)
+  earned_epoch    BigInt
+  spendable_epoch BigInt
+  pool_id         BigInt?
+  stake_address   stake_address @relation(fields: [addr_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  pool_hash       pool_hash?    @relation(fields: [pool_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@unique([addr_id, type, earned_epoch, pool_id], map: "unique_reward")
+  @@index([addr_id], map: "idx_reward_addr_id")
+  @@index([earned_epoch], map: "idx_reward_earned_epoch")
+  @@index([pool_id], map: "idx_reward_pool_id")
+}
+
+model schema_version {
+  id          BigInt @id @default(dbgenerated("nextval('schema_version_id_seq'::regclass)"))
+  stage_one   BigInt
+  stage_two   BigInt
+  stage_three BigInt
+}
+
+model script {
+  id              BigInt     @id @default(dbgenerated("nextval('script_id_seq'::regclass)"))
+  tx_id           BigInt
+  hash            Bytes      @unique(map: "unique_script")
+  type            scripttype
+  json            Json?
+  bytes           Bytes?
+  serialised_size Int?
+  tx              tx         @relation(fields: [tx_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@index([tx_id], map: "idx_script_tx_id")
+}
+
+model slot_leader {
+  id           BigInt     @id @default(dbgenerated("nextval('slot_leader_id_seq'::regclass)"))
+  hash         Bytes      @unique(map: "unique_slot_leader")
+  pool_hash_id BigInt?
+  description  String     @db.VarChar
+  pool_hash    pool_hash? @relation(fields: [pool_hash_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  block        block[]
+
+  @@index([pool_hash_id], map: "idx_slot_leader_pool_hash_id")
+}
+
+model stake_address {
+  id                   BigInt                 @id @default(dbgenerated("nextval('stake_address_id_seq'::regclass)"))
+  hash_raw             Bytes                  @unique(map: "unique_stake_address")
+  view                 String                 @db.VarChar
+  script_hash          Bytes?
+  registered_tx_id     BigInt
+  tx                   tx                     @relation(fields: [registered_tx_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  delegation           delegation[]
+  epoch_stake          epoch_stake[]
+  pool_owner           pool_owner[]
+  reserve              reserve[]
+  reward               reward[]
+  stake_deregistration stake_deregistration[]
+  stake_registration   stake_registration[]
+  treasury             treasury[]
+  tx_out               tx_out[]
+  withdrawal           withdrawal[]
+
+  @@index([hash_raw], map: "idx_stake_address_hash_raw")
+  @@index([registered_tx_id], map: "idx_stake_address_registered_tx_id")
+  @@index([view], map: "idx_stake_address_view")
+}
+
+model stake_deregistration {
+  id            BigInt        @id @default(dbgenerated("nextval('stake_deregistration_id_seq'::regclass)"))
+  addr_id       BigInt
+  cert_index    Int
+  epoch_no      Int
+  tx_id         BigInt
+  redeemer_id   BigInt?
+  stake_address stake_address @relation(fields: [addr_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  redeemer      redeemer?     @relation(fields: [redeemer_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  tx            tx            @relation(fields: [tx_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@unique([addr_id, tx_id], map: "unique_stake_deregistration")
+  @@index([addr_id], map: "idx_stake_deregistration_addr_id")
+  @@index([redeemer_id], map: "idx_stake_deregistration_redeemer_id")
+  @@index([tx_id], map: "idx_stake_deregistration_tx_id")
+}
+
+model stake_registration {
+  id            BigInt        @id @default(dbgenerated("nextval('stake_registration_id_seq'::regclass)"))
+  addr_id       BigInt
+  cert_index    Int
+  epoch_no      Int
+  tx_id         BigInt
+  stake_address stake_address @relation(fields: [addr_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  tx            tx            @relation(fields: [tx_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@unique([addr_id, tx_id], map: "unique_stake_registration")
+  @@index([addr_id], map: "idx_stake_registration_addr_id")
+  @@index([tx_id], map: "idx_stake_registration_tx_id")
+}
+
+model treasury {
+  id            BigInt        @id @default(dbgenerated("nextval('treasury_id_seq'::regclass)"))
+  addr_id       BigInt
+  cert_index    Int
+  amount        Decimal       @db.Decimal(20, 0)
+  tx_id         BigInt
+  stake_address stake_address @relation(fields: [addr_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  tx            tx            @relation(fields: [tx_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@unique([addr_id, tx_id], map: "unique_treasury")
+  @@index([addr_id], map: "idx_treasury_addr_id")
+  @@index([tx_id], map: "idx_treasury_tx_id")
+}
+
+model tx {
+  id                                              BigInt                 @id @default(dbgenerated("nextval('tx_id_seq'::regclass)"))
+  hash                                            Bytes                  @unique(map: "unique_tx")
+  block_id                                        BigInt
+  block_index                                     Int
+  out_sum                                         Decimal                @db.Decimal(20, 0)
+  fee                                             Decimal                @db.Decimal(20, 0)
+  deposit                                         BigInt
+  size                                            Int
+  invalid_before                                  Decimal?               @db.Decimal(20, 0)
+  invalid_hereafter                               Decimal?               @db.Decimal(20, 0)
+  valid_contract                                  Boolean
+  script_size                                     Int
+  block                                           block                  @relation(fields: [block_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  collateral_tx_in_collateral_tx_in_tx_in_idTotx  collateral_tx_in[]     @relation("collateral_tx_in_tx_in_idTotx")
+  collateral_tx_in_collateral_tx_in_tx_out_idTotx collateral_tx_in[]     @relation("collateral_tx_in_tx_out_idTotx")
+  datum                                           datum[]
+  delegation                                      delegation[]
+  ma_tx_mint                                      ma_tx_mint[]
+  param_proposal                                  param_proposal[]
+  pool_metadata_ref                               pool_metadata_ref[]
+  pool_owner                                      pool_owner[]
+  pool_retire                                     pool_retire[]
+  pool_update                                     pool_update[]
+  pot_transfer                                    pot_transfer[]
+  redeemer                                        redeemer[]
+  reserve                                         reserve[]
+  script                                          script[]
+  stake_address                                   stake_address[]
+  stake_deregistration                            stake_deregistration[]
+  stake_registration                              stake_registration[]
+  treasury                                        treasury[]
+  tx_in_txTotx_in_tx_in_id                        tx_in[]                @relation("txTotx_in_tx_in_id")
+  tx_in_txTotx_in_tx_out_id                       tx_in[]                @relation("txTotx_in_tx_out_id")
+  tx_metadata                                     tx_metadata[]
+  tx_out                                          tx_out[]
+  withdrawal                                      withdrawal[]
+
+  @@index([block_id], map: "idx_tx_block_id")
+}
+
+model tx_in {
+  id                     BigInt    @id @default(dbgenerated("nextval('tx_in_id_seq'::regclass)"))
+  tx_in_id               BigInt
+  tx_out_id              BigInt
+  tx_out_index           Int       @db.SmallInt
+  redeemer_id            BigInt?
+  redeemer               redeemer? @relation(fields: [redeemer_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  tx_txTotx_in_tx_in_id  tx        @relation("txTotx_in_tx_in_id", fields: [tx_in_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  tx_txTotx_in_tx_out_id tx        @relation("txTotx_in_tx_out_id", fields: [tx_out_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@unique([tx_out_id, tx_out_index], map: "unique_txin")
+  @@index([redeemer_id], map: "idx_tx_in_redeemer_id")
+  @@index([tx_in_id], map: "idx_tx_in_source_tx")
+  @@index([tx_in_id], map: "idx_tx_in_tx_in_id")
+  @@index([tx_out_id], map: "idx_tx_in_tx_out_id")
+}
+
+model tx_metadata {
+  id    BigInt  @id @default(dbgenerated("nextval('tx_metadata_id_seq'::regclass)"))
+  key   Decimal @db.Decimal(20, 0)
+  json  Json?
+  bytes Bytes
+  tx_id BigInt
+  tx    tx      @relation(fields: [tx_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@unique([key, tx_id], map: "unique_tx_metadata")
+  @@index([tx_id], map: "idx_tx_metadata_tx_id")
+}
+
+model tx_out {
+  id                 BigInt         @id @default(dbgenerated("nextval('tx_out_id_seq'::regclass)"))
+  tx_id              BigInt
+  index              Int            @db.SmallInt
+  address            String         @db.VarChar
+  address_raw        Bytes
+  address_has_script Boolean
+  payment_cred       Bytes?
+  stake_address_id   BigInt?
+  value              Decimal        @db.Decimal(20, 0)
+  data_hash          Bytes?
+  stake_address      stake_address? @relation(fields: [stake_address_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  tx                 tx             @relation(fields: [tx_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  ma_tx_out          ma_tx_out[]
+
+  @@unique([tx_id, index], map: "unique_txout")
+  @@index([address], map: "idx_tx_out_address")
+  @@index([payment_cred], map: "idx_tx_out_payment_cred")
+  @@index([stake_address_id], map: "idx_tx_out_stake_address_id")
+  @@index([tx_id], map: "idx_tx_out_tx_id")
+}
+
+model withdrawal {
+  id            BigInt        @id @default(dbgenerated("nextval('withdrawal_id_seq'::regclass)"))
+  addr_id       BigInt
+  amount        Decimal       @db.Decimal(20, 0)
+  redeemer_id   BigInt?
+  tx_id         BigInt
+  stake_address stake_address @relation(fields: [addr_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  redeemer      redeemer?     @relation(fields: [redeemer_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  tx            tx            @relation(fields: [tx_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@unique([addr_id, tx_id], map: "unique_withdrawal")
+  @@index([addr_id], map: "idx_withdrawal_addr_id")
+  @@index([redeemer_id], map: "idx_withdrawal_redeemer_id")
+  @@index([tx_id], map: "idx_withdrawal_tx_id")
+}
+
+enum rewardtype {
+  leader
+  member
+  reserves
+  treasury
+  refund
+}
+
+enum scriptpurposetype {
+  spend
+  mint
+  cert
+  reward
+}
+
+enum scripttype {
+  multisig
+  timelock
+  plutus
+}
+
+enum syncstatetype {
+  lagging
+  following
+}

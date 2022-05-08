@@ -1,13 +1,13 @@
 import useStore from '@/store/useStore';
 import { SearchIcon } from '@chakra-ui/icons';
 import {
+  Box,
   Container,
   Flex,
   Heading,
   Input,
   InputGroup,
   InputLeftElement,
-  Skeleton,
   SkeletonText,
   Tag,
 } from '@chakra-ui/react';
@@ -20,6 +20,22 @@ import SearchResult from './components/SearchResult';
 import { decodeType, getUrlFromType } from '@/utils/crypto/validation';
 import { truncateString } from '@/utils/strings';
 import useAdaPrice from '@/hooks/useAdaPrice';
+import useBlockchainLoad from '@/hooks/useBlockhainLoad';
+
+const getBlockchainLoadColor = (
+  load: number | null,
+): 'red' | 'yellow' | 'green' | 'gray' => {
+  if (load === null) {
+    return 'gray';
+  }
+  if (load > 0.95) {
+    return 'red';
+  }
+  if (load > 0.85) {
+    return 'yellow';
+  }
+  return 'green';
+};
 
 const Navbar = () => {
   const searchedVal = useStore((state) => state.searchedVal);
@@ -34,6 +50,7 @@ const Navbar = () => {
   const updateSearchVal = useStore((state) => state.updateSearchVal);
 
   const adaPrice = useAdaPrice();
+  const blockchainLoad = useBlockchainLoad();
 
   const clickAwayRef = useRef<HTMLAnchorElement>(null);
 
@@ -58,13 +75,20 @@ const Navbar = () => {
         display={'flex'}
         justifyContent="space-between"
       >
-        <Link href={'/'} passHref>
-          <a>
-            <Heading size={'md'}>ADAScan</Heading>
-          </a>
-        </Link>
+        <Box flexGrow={0.1}>
+          <Link href={'/'} passHref>
+            <a>
+              <Heading size={'md'}>Asterium explorer</Heading>
+            </a>
+          </Link>
+        </Box>
 
-        <Flex alignItems={'center'} gap={'1'} position="relative">
+        <Flex
+          alignItems={'center'}
+          gap={'1'}
+          position="relative"
+          justifyContent={'center'}
+        >
           <InputGroup>
             <InputLeftElement
               color={'gray.500'}
@@ -96,14 +120,31 @@ const Navbar = () => {
                 )))}
           </InputGroup>
         </Flex>
-        <Tag>
-          ADA: $
-          {!adaPrice ? (
-            <SkeletonText width={16} height={2} ml="2" noOfLines={1} />
-          ) : (
-            adaPrice
-          )}
-        </Tag>
+        <Flex gap={'2'}>
+          <Tag>
+            ADA: $
+            {!adaPrice ? (
+              <SkeletonText width={16} height={2} ml="2" noOfLines={1} />
+            ) : (
+              adaPrice
+            )}
+          </Tag>
+          <Tag colorScheme={getBlockchainLoadColor(blockchainLoad)}>
+            Load:{' '}
+            {!blockchainLoad ? (
+              <SkeletonText
+                width={12}
+                height={2}
+                ml="2"
+                mr={'2'}
+                noOfLines={1}
+              />
+            ) : (
+              (blockchainLoad * 100).toFixed(2)
+            )}
+            %
+          </Tag>
+        </Flex>
       </Container>
     </Flex>
   );

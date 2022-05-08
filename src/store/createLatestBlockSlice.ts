@@ -14,7 +14,6 @@ const createLatestBlockSlice = (set: SetState<AppState>) => ({
 
   fetchLatestBlock: async () => {
     const { data } = await axios.get<LatestBlockResponse>('blocks/latest');
-    console.log(data);
     set((state) => ({ ...state, latestBlock: data.latestBlock }));
   },
 });
