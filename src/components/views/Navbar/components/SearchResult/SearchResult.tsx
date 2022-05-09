@@ -1,7 +1,7 @@
 import styles from './styles.module.scss';
 
 import React from 'react';
-import { Flex, theme, Box, Heading, Text, Skeleton } from '@chakra-ui/react';
+import { Flex, Box, Heading, Text, Skeleton } from '@chakra-ui/react';
 import Link from 'next/link';
 
 interface SearchResultProps {
@@ -9,15 +9,17 @@ interface SearchResultProps {
   subtitle: string;
   loading: boolean;
   url: string;
+  onClick: () => void;
 }
 
 const SearchResult = React.forwardRef<HTMLAnchorElement, SearchResultProps>(
   (props, ref) => {
-    const { title, loading, subtitle, url } = props;
+    const { title, loading, subtitle, url, onClick } = props;
 
     return (
       <Link href={url} passHref>
-        <a ref={ref} className={styles.searchResult}>
+        {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+        <a ref={ref} className={styles.searchResult} onClick={onClick}>
           <Flex
             bgColor="gray.700"
             px={'6'}

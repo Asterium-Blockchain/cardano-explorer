@@ -1,0 +1,27 @@
+$gray: #cbd5e0;
+
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  a {
+    cursor: not-allowed;
+  }
+}
+.paginator {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+
+  li {
+    border: 1px solid $gray;
+    padding: 0.5em;
+    border-radius: 10%;
+    transition: 200ms;
+
+    &:hover {
+      opacity: 0.6;
+    }
+  }
+}

@@ -112,6 +112,7 @@ const Navbar = () => {
                 (element?.type && (
                   <SearchResult
                     url={getUrlFromType(element.type, searchedVal) || '#'}
+                    onClick={toggleShowSearchElement}
                     loading={isLoadingSearch}
                     title={decodeType(element.type)}
                     subtitle={truncateString(searchedVal, 48, 'middle') || ''}

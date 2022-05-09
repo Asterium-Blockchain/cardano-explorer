@@ -1,17 +1,26 @@
+import {
+  Button,
+  Center,
+  Container,
+  Flex,
+  Heading,
+  Tag,
+} from '@chakra-ui/react';
+import { toHex } from 'lucid-cardano';
+
 import { ADA_HANDLE_POLICY_ID } from '@/constants';
-import blockfrost from '@/utils/blockchain/blockfrost';
+import { AddressPageProps } from '@/pages/address/[address]';
+import useStore from '@/store/useStore';
 import { hex2a } from '@/utils/strings';
-import { Container, Flex, Heading, Tag } from '@chakra-ui/react';
 import DetailsTable from './components/DetailsTable';
 import Transaction from './components/Transaction';
+import { useMemo } from 'react';
 
-interface AddressProps {
-  addressData: Awaited<ReturnType<typeof blockfrost.addressesExtended>>;
-  transactions: Awaited<ReturnType<typeof blockfrost.addressesTransactions>>;
-  adaHandle?: string;
-}
-
-const Address: React.FC<AddressProps> = ({ addressData, transactions }) => {
+const Address: React.FC<AddressPageProps> = ({
+  addressData,
+  transactions,
+  hasMore,
+}) => {
   const { script, address, amount, stake_address: stakeAddress } = addressData;
 
   const balance = amount.find((a) => a.unit === 'lovelace')?.quantity || '0';
@@ -20,6 +29,17 @@ const Address: React.FC<AddressProps> = ({ addressData, transactions }) => {
     .find((a) => a.unit.slice(0, 56) === ADA_HANDLE_POLICY_ID)
     ?.unit.slice(56);
   const adaHandle = encodedAdaHandle ? hex2a(encodedAdaHandle) : undefined;
+
+  const addressTransactions = useStore((state) => state.addressTransactions);
+  const isLoadingFetchMore = useStore(
+    (state) => state.isLoadingFetchMoreAddressTransactions,
+  );
+  const fetchMore = useStore((state) => state.fetchMoreAddressTransactions);
+  const fetchMoreWithAddress = () => fetchMore(address);
+
+  const allTransactions = useMemo(() => {
+    return [...transactions, ...addressTransactions];
+  }, [addressTransactions, transactions]);
 
   return (
     <Container maxW={'container.xl'} py="12">
@@ -46,9 +66,21 @@ const Address: React.FC<AddressProps> = ({ addressData, transactions }) => {
         Transactions
       </Heading>
 
-      {transactions.map(({ tx_hash: txHash }) => (
-        <Transaction key={txHash} />
+      {allTransactions.map((transaction) => (
+        <Transaction key={toHex(transaction.hash)} transaction={transaction} />
       ))}
+
+      {hasMore && (
+        <Center mt={10}>
+          <Button
+            variant={'outline'}
+            onClick={fetchMoreWithAddress}
+            isLoading={isLoadingFetchMore}
+          >
+            Fetch more
+          </Button>
+        </Center>
+      )}
     </Container>
   );
 };

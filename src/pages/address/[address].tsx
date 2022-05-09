@@ -3,10 +3,13 @@ import { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 import { isAddress } from '@/utils/crypto/validation';
 import Address from '@/components/views/Address';
 import blockfrost from '@/utils/blockchain/blockfrost';
+import axios from '@/utils/axios';
+import { AddressTransactionsResponse } from '@/pages/api/addresses/[address]/transactions';
 
-interface AddressPageProps {
+export interface AddressPageProps {
   addressData: Awaited<ReturnType<typeof blockfrost.addressesExtended>>;
-  transactions: Awaited<ReturnType<typeof blockfrost.addressesTransactions>>;
+  transactions: AddressTransactionsResponse['transactions'];
+  hasMore: boolean;
 }
 
 export const getStaticPaths: GetStaticPaths = () => {
@@ -27,12 +30,20 @@ export const getStaticProps: GetStaticProps<AddressPageProps> = async (req) => {
   }
 
   const addressData = await blockfrost.addressesExtended(address);
-  const transactions = await blockfrost.addressesTransactions(address);
+  const { data } = await axios.get<AddressTransactionsResponse>(
+    `addresses/${address}/transactions`,
+    {
+      params: {
+        page: 0,
+      },
+    },
+  );
 
   return {
     props: {
       addressData: addressData,
-      transactions,
+      transactions: data.transactions,
+      hasMore: data.hasMore,
     },
   };
 };
