@@ -1,9 +1,9 @@
+import { AddressTransactionsResponse } from '@/pages/api/addresses/[address]/transactions';
 import { Box, Text } from '@chakra-ui/react';
-import { tx } from '@prisma/client';
 import Link from 'next/link';
 
 interface TransactionProps {
-  transaction: tx;
+  transaction: AddressTransactionsResponse['transactions'][0];
 }
 
 const Transaction: React.FC<TransactionProps> = ({ transaction }) => {

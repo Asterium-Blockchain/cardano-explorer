@@ -21,6 +21,7 @@ import { decodeType, getUrlFromType } from '@/utils/crypto/validation';
 import { truncateString } from '@/utils/strings';
 import useAdaPrice from '@/hooks/useAdaPrice';
 import useBlockchainLoad from '@/hooks/useBlockhainLoad';
+import WalletConnector from './components/WalletConnector';
 
 const getBlockchainLoadColor = (
   load: number | null,
@@ -78,7 +79,7 @@ const Navbar = () => {
         <Box flexGrow={0.1}>
           <Link href={'/'} passHref>
             <a>
-              <Heading size={'md'}>Asterium explorer</Heading>
+              <Heading size={'md'}>Asterium</Heading>
             </a>
           </Link>
         </Box>
@@ -121,7 +122,7 @@ const Navbar = () => {
                 )))}
           </InputGroup>
         </Flex>
-        <Flex gap={'2'}>
+        <Flex gap={'2'} alignItems="center">
           <Tag>
             ADA: $
             {!adaPrice ? (
@@ -130,7 +131,7 @@ const Navbar = () => {
               adaPrice
             )}
           </Tag>
-          <Tag colorScheme={getBlockchainLoadColor(blockchainLoad)}>
+          <Tag colorScheme={getBlockchainLoadColor(blockchainLoad)} mr="3">
             Load:{' '}
             {!blockchainLoad ? (
               <SkeletonText
@@ -145,6 +146,7 @@ const Navbar = () => {
             )}
             %
           </Tag>
+          <WalletConnector />
         </Flex>
       </Container>
     </Flex>

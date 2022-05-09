@@ -8,8 +8,11 @@ import { fromHex } from 'lucid-cardano';
 export interface AddressTransactionsResponse {
   transactions: (tx & {
     block: block;
+    tx_out: tx_out[];
     tx_in_txTotx_in_tx_out_id: (tx_in & {
-      tx_txTotx_in_tx_out_id: tx & { tx_out: tx_out[] };
+      tx_txTotx_in_tx_out_id: tx & {
+        tx_out: tx_out[];
+      };
     })[];
   })[];
   hasMore: boolean;
@@ -46,6 +49,7 @@ const handler: NextApiHandler<
     },
     include: {
       block: true,
+      tx_out: true,
       tx_in_txTotx_in_tx_out_id: {
         include: {
           tx_txTotx_in_tx_out_id: {

@@ -11,12 +11,14 @@ import createLatestBlockSlice, {
   LatestBlockSlice,
 } from './createLatestBlockSlice';
 import createSearchSlice, { SearchSlice } from './createSearchSlice';
+import createWalletSlice, { WalletSlice } from './createWalletSlice';
 
 export type AppState = SearchSlice &
   AdaPriceSlice &
   LatestBlockSlice &
   BlockchainLoadSlice &
-  AddressTransactionsSlice;
+  AddressTransactionsSlice &
+  WalletSlice;
 
 const useStore = create<AppState>((set, get) => ({
   ...createSearchSlice(set, get),
@@ -24,6 +26,7 @@ const useStore = create<AppState>((set, get) => ({
   ...createLatestBlockSlice(set),
   ...createBlockchainLoadSlice(set),
   ...createAddressTransactionsSlice(set, get),
+  ...createWalletSlice(set),
 }));
 
 export default useStore;
