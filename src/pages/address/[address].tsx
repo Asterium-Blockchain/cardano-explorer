@@ -49,9 +49,10 @@ export const getStaticProps: GetStaticProps<AddressPageProps> = async (req) => {
     props: {
       transactions,
       hasMore: transactions.length === 26,
+      // TODO: Calculate these things
       addressData: {
-        stakeAddress,
-        lovelaceBalance: 12344324324 || '0',
+        stakeAddress: stakeAddress || '',
+        lovelaceBalance: '12312312312' || '0',
         adaHandle: 'martin',
         address,
         isScript: false,
