@@ -1,7 +1,4 @@
-import useWallet from '@/hooks/useWallet';
 import useStore from '@/store/useStore';
-import { hex2a } from '@/utils/strings';
-import { ChevronDownIcon } from '@chakra-ui/icons';
 import {
   Box,
   Button,
@@ -59,6 +56,7 @@ const AddMenu: React.FC<AddMenuProps> = ({ purpose, onClose, ...rest }) => {
             unit: 'lovelace',
             quantity: (values.adaAmount * 1000000).toString(),
           },
+          ...values.multiasset,
         ],
       });
     }
@@ -73,7 +71,7 @@ const AddMenu: React.FC<AddMenuProps> = ({ purpose, onClose, ...rest }) => {
         <Formik initialValues={formInitialValues} onSubmit={handleSubmit}>
           {({ handleSubmit, errors, touched }) => (
             <Box
-              onSubmit={handleSubmit}
+              onSubmit={handleSubmit as any}
               as="form"
               h="100%"
               display={'flex'}
@@ -122,7 +120,11 @@ const AddMenu: React.FC<AddMenuProps> = ({ purpose, onClose, ...rest }) => {
                         <Field type={type} name={name}>
                           {({ field, form }: any) =>
                             selectFrom === 'BALANCE' ? (
-                              <MultiAssetSelector buttonTitle={placeholder} />
+                              <MultiAssetSelector
+                                onChange={(selectedAssets) =>
+                                  form.setFieldValue(field.name, selectedAssets)
+                                }
+                              />
                             ) : null
                           }
                         </Field>

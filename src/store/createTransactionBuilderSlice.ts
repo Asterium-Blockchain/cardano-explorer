@@ -117,10 +117,9 @@ const createTransactionBuilderSlice = (
 
       let tx = Tx.new();
 
-      outputs.forEach(
-        ({ address, amount }) =>
-          (tx = tx.payToAddress(address, amountToAssets(amount))),
-      );
+      outputs.forEach(({ address, amount }) => {
+        tx = tx.payToAddress(address, amountToAssets(amount));
+      });
 
       const completed = await tx.complete();
 

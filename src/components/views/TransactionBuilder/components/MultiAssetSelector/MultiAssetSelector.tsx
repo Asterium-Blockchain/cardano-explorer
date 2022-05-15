@@ -6,19 +6,25 @@ import {
   Input,
   InputGroup,
   InputLeftElement,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
   Text,
 } from '@chakra-ui/react';
 import { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import { FixedSizeList } from 'react-window';
 import Fuse from 'fuse.js';
 import { CheckIcon, SearchIcon } from '@chakra-ui/icons';
+import { Amount } from '@/types';
 
 interface MultiAssetSelectorProps {
-  buttonTitle: string;
+  onChange: (selectedAmount: Amount) => void;
 }
 
 const MultiAssetSelector: React.FC<MultiAssetSelectorProps> = ({
-  buttonTitle,
+  onChange,
 }) => {
   const { balance } = useWallet();
   const [q, setQ] = useState<string>('');
@@ -29,11 +35,14 @@ const MultiAssetSelector: React.FC<MultiAssetSelectorProps> = ({
 
   const convertedBalance = useMemo(() => {
     const sorted = balance?.sort();
-    const converted = sorted?.map((a) => ({
-      ...a,
-      readableUnit: hex2a(a.unit.slice(56)),
-      selected: false,
-    }));
+    const converted = sorted
+      ?.map((a) => ({
+        ...a,
+        readableUnit: hex2a(a.unit.slice(56)),
+        selected: false,
+        selectedQuantity: 0,
+      }))
+      .filter((a) => a.unit !== 'lovelace');
     return converted;
   }, [balance]);
 
@@ -62,6 +71,32 @@ const MultiAssetSelector: React.FC<MultiAssetSelectorProps> = ({
   const indexToggler = (index: number) => () => {
     const newResults = [...results];
     newResults[index].selected = !newResults[index].selected;
+
+    onChange(
+      newResults
+        .filter((r) => r.selected || r.selectedQuantity !== 0)
+        .map((r) => ({
+          unit: r.unit,
+          quantity: r.selected ? '1' : r.selectedQuantity,
+        })),
+    );
+
+    setResults(newResults);
+  };
+
+  const fungibleHandler = (index: number) => (quantity: string) => {
+    const newResults = [...results];
+    newResults[index].selectedQuantity = quantity;
+
+    onChange(
+      newResults
+        .filter((r) => r.selected || r.selectedQuantity !== 0)
+        .map((r) => ({
+          unit: r.unit,
+          quantity: r.selected ? '1' : r.selectedQuantity,
+        })),
+    );
+
     setResults(newResults);
   };
 
@@ -93,8 +128,14 @@ const MultiAssetSelector: React.FC<MultiAssetSelectorProps> = ({
             itemSize={50}
           >
             {({ index, style }) => {
-              const { unit, quantity, readableUnit, selected } = results[index];
-              return (
+              const {
+                unit,
+                quantity,
+                readableUnit,
+                selected,
+                selectedQuantity,
+              } = results[index];
+              return quantity === '1' ? (
                 <Box
                   key={unit}
                   style={style}
@@ -110,7 +151,44 @@ const MultiAssetSelector: React.FC<MultiAssetSelectorProps> = ({
                     display={selected ? 'inline' : 'none'}
                     color="green.400"
                   />
-                  {quantity} {readableUnit || hex2a(unit.slice(56))}
+                  {readableUnit || hex2a(unit.slice(56))}
+                </Box>
+              ) : (
+                <Box
+                  key={unit}
+                  display="flex"
+                  style={style}
+                  alignItems="center"
+                  justifyContent="space-between"
+                >
+                  {selectedQuantity !== '0' && (
+                    <CheckIcon
+                      mr="2"
+                      display={selected ? 'inline' : 'none'}
+                      color="green.400"
+                    />
+                  )}
+                  <CheckIcon
+                    mr="2"
+                    display={selected ? 'inline' : 'none'}
+                    color="green.400"
+                  />
+                  <Text>Unit: {readableUnit || hex2a(unit.slice(56))}</Text>
+                  <NumberInput
+                    defaultValue={0}
+                    maxW="20%"
+                    mr="3"
+                    min={0}
+                    max={parseInt(quantity, 10)}
+                    onChange={fungibleHandler(index)}
+                    value={selectedQuantity}
+                  >
+                    <NumberInputField />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                    </NumberInputStepper>
+                  </NumberInput>
                 </Box>
               );
             }}

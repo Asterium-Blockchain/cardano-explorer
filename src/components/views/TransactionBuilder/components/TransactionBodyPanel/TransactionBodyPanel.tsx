@@ -1,11 +1,8 @@
 import useWallet from '@/hooks/useWallet';
 import useStore from '@/store/useStore';
-import { truncateString } from '@/utils/strings';
-import { CloseIcon } from '@chakra-ui/icons';
 import {
   Box,
   Button,
-  Flex,
   Grid,
   GridItem,
   Heading,
@@ -20,7 +17,7 @@ import TxOut from '../TxOut';
 import BUILDER_FEEDBACK_CONSTANTS from './feedback-constants';
 
 const TransactionBodyPanel = () => {
-  const { walletLoading, walletName, api } = useWallet();
+  const { walletLoading, walletName } = useWallet();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const inputs = useStore((state) => state.inputs);

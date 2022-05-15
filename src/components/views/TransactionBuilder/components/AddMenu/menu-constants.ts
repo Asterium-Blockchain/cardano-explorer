@@ -59,6 +59,7 @@ const MENU_CONSTANTS: Record<MenuPurpose, MenuConstantItem> = {
         placeholder: 'Add assets',
         name: 'multiasset',
         selectFrom: 'BALANCE',
+        initialValue: [],
       },
     ],
   },
