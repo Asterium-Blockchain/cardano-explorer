@@ -11,7 +11,7 @@ export const SUPPORTED_WALLETS: WalletName[] = [
   'nami',
   'eternl',
   'flint',
-  'gero',
+  // 'gero',
 ];
 
 export const EPOCH_DURATION = 432000;

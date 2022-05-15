@@ -3,13 +3,22 @@ import { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 import { isAddress } from '@/utils/crypto/validation';
 import Address from '@/components/views/Address';
 import blockfrost from '@/utils/blockchain/blockfrost';
-import axios from '@/utils/axios';
-import { AddressTransactionsResponse } from '@/pages/api/addresses/[address]/transactions';
+import { getAddressStakeKey } from '@/utils/crypto';
+import prisma from 'prisma/client';
+import { ADA_HANDLE_POLICY_ID } from '@/constants';
 
+interface AddressData {
+  stakeAddress: string;
+  lovelaceBalance: string;
+  tokenCount: number;
+  isScript: boolean;
+  adaHandle: string;
+  address: string;
+}
 export interface AddressPageProps {
-  addressData: Awaited<ReturnType<typeof blockfrost.addressesExtended>>;
-  transactions: AddressTransactionsResponse['transactions'];
+  transactions: Awaited<ReturnType<typeof blockfrost.addressesTransactions>>;
   hasMore: boolean;
+  addressData: AddressData;
 }
 
 export const getStaticPaths: GetStaticPaths = () => {
@@ -29,21 +38,25 @@ export const getStaticProps: GetStaticProps<AddressPageProps> = async (req) => {
     };
   }
 
-  const addressData = await blockfrost.addressesExtended(address);
-  const { data } = await axios.get<AddressTransactionsResponse>(
-    `addresses/${address}/transactions`,
-    {
-      params: {
-        page: 0,
-      },
-    },
-  );
+  const stakeAddress = getAddressStakeKey(address);
+
+  const transactions = await blockfrost.addressesTransactions(address, {
+    count: 26,
+    page: 1,
+  });
 
   return {
     props: {
-      addressData: addressData,
-      transactions: data.transactions,
-      hasMore: data.hasMore,
+      transactions,
+      hasMore: transactions.length === 26,
+      addressData: {
+        stakeAddress,
+        lovelaceBalance: 12344324324 || '0',
+        adaHandle: 'martin',
+        address,
+        isScript: false,
+        tokenCount: 20,
+      },
     },
   };
 };

@@ -6,29 +6,26 @@ import {
   Heading,
   Tag,
 } from '@chakra-ui/react';
-import { toHex } from 'lucid-cardano';
 
-import { ADA_HANDLE_POLICY_ID } from '@/constants';
 import { AddressPageProps } from '@/pages/address/[address]';
 import useStore from '@/store/useStore';
-import { hex2a } from '@/utils/strings';
 import DetailsTable from './components/DetailsTable';
 import Transaction from './components/Transaction';
 import { useMemo } from 'react';
 
 const Address: React.FC<AddressPageProps> = ({
-  addressData,
   transactions,
   hasMore,
+  addressData,
 }) => {
-  const { script, address, amount, stake_address: stakeAddress } = addressData;
-
-  const balance = amount.find((a) => a.unit === 'lovelace')?.quantity || '0';
-  const tokenCount = amount.filter((a) => a.unit !== 'lovelace').length;
-  const encodedAdaHandle = amount
-    .find((a) => a.unit.slice(0, 56) === ADA_HANDLE_POLICY_ID)
-    ?.unit.slice(56);
-  const adaHandle = encodedAdaHandle ? hex2a(encodedAdaHandle) : undefined;
+  const {
+    lovelaceBalance,
+    isScript,
+    tokenCount,
+    stakeAddress,
+    adaHandle,
+    address,
+  } = addressData;
 
   const addressTransactions = useStore((state) => state.addressTransactions);
   const isLoadingFetchMore = useStore(
@@ -47,7 +44,7 @@ const Address: React.FC<AddressPageProps> = ({
         <Heading size="md" mr="2">
           Address
         </Heading>
-        {script && (
+        {isScript && (
           <Tag size={'sm'} mt="1" colorScheme={'pink'}>
             Script
           </Tag>
@@ -56,7 +53,7 @@ const Address: React.FC<AddressPageProps> = ({
 
       <DetailsTable
         address={address}
-        balance={balance}
+        balance={lovelaceBalance}
         stakeKey={stakeAddress}
         tokenCount={tokenCount}
         adaHandle={adaHandle}
@@ -67,7 +64,7 @@ const Address: React.FC<AddressPageProps> = ({
       </Heading>
 
       {allTransactions.map((transaction) => (
-        <Transaction key={toHex(transaction.hash)} transaction={transaction} />
+        <Transaction key={transaction.tx_hash} transaction={transaction} />
       ))}
 
       {hasMore && (

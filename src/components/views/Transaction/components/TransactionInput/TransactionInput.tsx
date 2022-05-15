@@ -88,7 +88,8 @@ const TransactionInput: React.FC<TransactionInputProps> = ({
             <div>
               <AccordionButton>
                 <Text color={'gray.400'}>
-                  <b>{filteredAmount.length}</b> native tokens
+                  <b>{filteredAmount.length}</b> native token
+                  {filteredAmount.length !== 1 && 's'}
                 </Text>
                 <AccordionIcon color={'gray.500'} />
               </AccordionButton>

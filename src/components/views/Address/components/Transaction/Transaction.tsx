@@ -1,13 +1,14 @@
-import { AddressTransactionsResponse } from '@/pages/api/addresses/[address]/transactions';
+import { AddressPageProps } from '@/pages/address/[address]';
 import { Box, Text } from '@chakra-ui/react';
+import moment from 'moment';
 import Link from 'next/link';
 
 interface TransactionProps {
-  transaction: AddressTransactionsResponse['transactions'][0];
+  transaction: AddressPageProps['transactions'][0];
 }
 
 const Transaction: React.FC<TransactionProps> = ({ transaction }) => {
-  const { hash } = transaction;
+  const { tx_hash: hash, block_time: blockTime } = transaction;
   return (
     <Box bgColor={'gray.700'} borderRadius="md" p={'5'} my="3">
       <Link href={`/transaction/${hash}`}>
@@ -22,6 +23,9 @@ const Transaction: React.FC<TransactionProps> = ({ transaction }) => {
           </Text>
         </a>
       </Link>
+      <Text color={'gray.500'}>
+        {moment(blockTime * 1000).format('MM/DD HH:mm:ss')}
+      </Text>
     </Box>
   );
 };

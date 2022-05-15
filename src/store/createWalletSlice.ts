@@ -3,7 +3,7 @@ import { fromHex } from 'lucid-cardano';
 import { SetState } from 'zustand';
 import { AppState } from './useStore';
 
-export type WalletName = 'eternl' | 'nami' | 'flint' | 'gero';
+export type WalletName = 'eternl' | 'nami' | 'flint';
 
 export interface WalletSlice {
   api: CardanoApi | null;

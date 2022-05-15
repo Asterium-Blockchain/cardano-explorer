@@ -1,3 +1,5 @@
+import { BuilderErrors } from '@/store/createTransactionBuilderSlice';
+
 export function truncateString(
   str: string,
   num: number,
@@ -34,4 +36,14 @@ export function bytesToSize(bytes: number) {
 
 export function capitalizeFirstLetter(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+export function decodeLucidError(error: any) {
+  if (error === 'InputsExhaustedError') {
+    return BuilderErrors.INPUTS_EXHAUSTED;
+  }
+  if (error.info && error.info.indexOf('User declined') !== -1) {
+    return undefined;
+  }
+  return BuilderErrors.UNKOWN_ERROR;
 }

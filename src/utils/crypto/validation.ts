@@ -14,7 +14,7 @@ export const isTxHash = (value: any) =>
 export const isAddress = (value: any) =>
   !!(
     typeof value === 'string' &&
-    value.length === 103 &&
+    (value.length === 103 || value.length === 58) &&
     value.match(/addr1[a-z0-9]+/)
   );
 

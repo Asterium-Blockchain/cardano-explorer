@@ -1,4 +1,4 @@
-import { AddressTransactionsResponse } from '@/pages/api/addresses/[address]/transactions';
+import { AddressTransactionsResponse } from '@/pages/api/address/[address]/transactions';
 import axios from '@/utils/axios';
 import { GetState, SetState } from 'zustand';
 import { AppState } from './useStore';
@@ -22,7 +22,7 @@ const createAddressTransactionsSlice = (
     set(() => ({ isLoadingFetchMoreAddressTransactions: true }));
 
     const { data } = await axios.get<AddressTransactionsResponse>(
-      `addresses/${address}/transactions`,
+      `address/${address}/transactions`,
       {
         params: {
           page: get().addressTransactionsPage + 1,

@@ -59,7 +59,7 @@ const DetailsTable: React.FC<DetailsTableProps> = ({
             </Td>
           </Tr>
           <Tr>
-            <Th>Native tokens</Th>
+            <Th>Native token {tokenCount !== 1 && 's'}</Th>
             <Td textAlign={'right'}>
               <Text as="code">{tokenCount}</Text>
             </Td>

@@ -41,6 +41,7 @@
     "chakra-ui-flashless": "0.0.8",
     "d3-scale": "4.0.2",
     "feather-icons": "4.29.0",
+    "formik": "2.2.9",
     "framer-motion": "^6",
     "lucid-cardano": "0.2.2",
     "moment": "2.29.3",
