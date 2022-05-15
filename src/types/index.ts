@@ -23,3 +23,5 @@ export interface CardanoApi {
   submitTx: (cbor: string) => Promise<string>;
   experimental: any;
 }
+
+export type Amount = { unit: string; quantity: string }[];

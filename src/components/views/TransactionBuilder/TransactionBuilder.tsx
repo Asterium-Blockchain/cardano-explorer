@@ -12,6 +12,7 @@ import {
   Tabs,
   Text,
 } from '@chakra-ui/react';
+import MetadataPanel from './components/MetadataPanel';
 import TransactionBodyPanel from './components/TransactionBodyPanel';
 
 const TransactionBuilder = () => {
@@ -41,7 +42,9 @@ const TransactionBuilder = () => {
           <TabPanel minH="60vh" display={'flex'}>
             <TransactionBodyPanel />
           </TabPanel>
-          <TabPanel></TabPanel>
+          <TabPanel minH="60vh" display={'flex'} alignItems={'stretch'}>
+            <MetadataPanel />
+          </TabPanel>
         </TabPanels>
       </Tabs>
     </Container>

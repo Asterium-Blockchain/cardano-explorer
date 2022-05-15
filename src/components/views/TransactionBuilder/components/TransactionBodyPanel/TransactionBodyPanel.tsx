@@ -16,6 +16,7 @@ import {
 import { useEffect, useMemo, useRef, useState } from 'react';
 import AddMenu from '../AddMenu';
 import SuccessModal from '../SuccessModal';
+import TxOut from '../TxOut';
 import BUILDER_FEEDBACK_CONSTANTS from './feedback-constants';
 
 const TransactionBodyPanel = () => {
@@ -111,36 +112,14 @@ const TransactionBodyPanel = () => {
               Outputs
             </Heading>
             <Box mt="6">
-              {outputs.map(({ amount, address }, index) => {
-                const lovelace = amount.find(
-                  (a) => a.unit === 'lovelace',
-                )?.quantity;
-                return (
-                  <Flex
-                    key={`${address}-${amount}`}
-                    backgroundColor={'gray.600'}
-                    borderRadius="md"
-                    p="4"
-                    my={'3'}
-                    alignItems="center"
-                  >
-                    <Box flexGrow={0.7}>
-                      <Text as={'code'} color="gray.400">
-                        {truncateString(address, 48, 'middle')}
-                      </Text>
-                      <br />
-                      <Text as="code" fontSize={'lg'}>
-                        {parseInt(lovelace || '0', 10) / 1000000} ADA
-                      </Text>
-                    </Box>
-                    <CloseIcon
-                      onClick={outputRemover(index)}
-                      _hover={{ opacity: 0.6 }}
-                      cursor={'pointer'}
-                    />
-                  </Flex>
-                );
-              })}
+              {outputs.map(({ address, amount }, index) => (
+                <TxOut
+                  key={`${address}-${amount}`}
+                  address={address}
+                  amount={amount}
+                  onRemove={outputRemover(index)}
+                />
+              ))}
               <Box
                 borderStyle={'dotted'}
                 px="2"

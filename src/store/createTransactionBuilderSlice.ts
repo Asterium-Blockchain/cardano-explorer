@@ -32,7 +32,9 @@ export interface TransactionBuilderSlice {
   builderError: BuilderErrors | null;
   fee: string | null;
   txHash: string | null;
+  metadata: Record<string, string> | null;
   resetBuilder: () => void;
+  setMetadata: (newMetadta: Record<string, string> | null) => void;
   addInput: (input: Input) => void;
   addOutput: (output: Output) => void;
   removeInput: (index: number) => void;
@@ -52,6 +54,7 @@ const createTransactionBuilderSlice = (
   builderError: null,
   fee: null,
   txHash: null,
+  metadata: null,
   addInput: (input: Input) => {
     set((state) => ({
       ...state,
@@ -84,10 +87,16 @@ const createTransactionBuilderSlice = (
       txHash: null,
     }));
   },
+  setMetadata: (newMetadata: Record<string, string> | null) => {
+    set((state) => ({
+      ...state,
+      metadata: newMetadata,
+    }));
+  },
   buildTransaction: async (wallet: WalletName) => {
     set((state) => ({ ...state, isBuilding: true, builderError: null }));
     try {
-      const { inputs, outputs } = get();
+      const { inputs, outputs, metadata } = get();
 
       if (inputs.length === 0 && outputs.length === 0) {
         set(() => ({ isBuilding: false, fee: null }));
@@ -107,6 +116,7 @@ const createTransactionBuilderSlice = (
       await Lucid.selectWallet(wallet);
 
       let tx = Tx.new();
+
       outputs.forEach(
         ({ address, amount }) =>
           (tx = tx.payToAddress(address, amountToAssets(amount))),
