@@ -2,7 +2,7 @@ import useStore from '@/store/useStore';
 import { randomID } from '@/utils/strings';
 import { CloseIcon, SmallAddIcon } from '@chakra-ui/icons';
 import { Box, Button, Flex, Input, Text } from '@chakra-ui/react';
-import { ChangeEvent, ChangeEventHandler, useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 
 const MetadataPanel = () => {
   const setMetadata = useStore((state) => state.setMetadata);

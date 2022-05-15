@@ -7,6 +7,7 @@ export interface Prompt {
   name: string;
   validate?: (value: any) => string | undefined;
   initialValue?: any;
+  selectFrom?: 'BALANCE';
 }
 
 interface MenuConstantItem {
@@ -52,6 +53,12 @@ const MENU_CONSTANTS: Record<MenuPurpose, MenuConstantItem> = {
             return 'Amount must be positive';
           }
         },
+      },
+      {
+        type: 'select',
+        placeholder: 'Add assets',
+        name: 'multiasset',
+        selectFrom: 'BALANCE',
       },
     ],
   },

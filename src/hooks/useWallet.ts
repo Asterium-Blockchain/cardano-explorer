@@ -6,6 +6,7 @@ const useWallet = () => {
   const walletLoading = useStore((state) => state.walletLoading);
   const walletName = useStore((state) => state.walletName);
   const address = useStore((state) => state.address);
+  const balance = useStore((state) => state.balance);
 
   return {
     connectWallet,
@@ -13,6 +14,7 @@ const useWallet = () => {
     walletLoading,
     walletName,
     address,
+    balance,
   };
 };
 export default useWallet;

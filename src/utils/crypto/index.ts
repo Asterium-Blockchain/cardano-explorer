@@ -17,14 +17,41 @@ export function getAddressStakeKey(addr: string) {
   return stake;
 }
 
-export const amountToAssets = (
+export function amountToAssets(
   amount: {
     unit: string;
     quantity: string;
   }[],
-) => {
+) {
   return amount.reduce(
     (acc, curr) => ({ ...acc, [curr.unit]: curr.quantity }),
     {},
   );
-};
+}
+
+export function valueToAssets(value: string) {
+  const parsedValue = C.Value.from_bytes(Buffer.from(value, 'hex'));
+  const assets = [];
+  assets.push({ unit: 'lovelace', quantity: parsedValue.coin().to_str() });
+  const multiasset = parsedValue.multiasset();
+  if (multiasset) {
+    const policies = multiasset.keys();
+    for (let j = 0; j < policies.len(); j++) {
+      const policy = policies.get(j);
+      const policyAssets = multiasset.get(policy);
+      const assetNames = policyAssets!.keys();
+      for (let k = 0; k < assetNames.len(); k++) {
+        const policyAsset = assetNames.get(k);
+        const quantity = policyAssets!.get(policyAsset);
+        const asset =
+          Buffer.from(policy.to_bytes()).toString('hex') +
+          Buffer.from(policyAsset.name()).toString('hex');
+        assets.push({
+          unit: asset,
+          quantity: quantity!.to_str(),
+        });
+      }
+    }
+  }
+  return assets;
+}

@@ -1,4 +1,5 @@
-import { CardanoApi } from '@/types';
+import { Amount, CardanoApi } from '@/types';
+import { valueToAssets } from '@/utils/crypto';
 import { fromHex } from 'lucid-cardano';
 import { SetState } from 'zustand';
 import { AppState } from './useStore';
@@ -10,6 +11,7 @@ export interface WalletSlice {
   address: string | null;
   walletLoading: null | WalletName;
   walletName: WalletName | null;
+  balance: Amount | null;
   connectWallet: (walletName: WalletName) => Promise<void>;
 }
 
@@ -18,6 +20,7 @@ const createWalletSlice = (set: SetState<AppState>) => ({
   address: null,
   walletLoading: null,
   walletName: null,
+  balance: null,
   connectWallet: async (walletName: WalletName) => {
     set((state) => ({ ...state, walletLoading: walletName }));
     try {
@@ -26,12 +29,14 @@ const createWalletSlice = (set: SetState<AppState>) => ({
       ]?.enable();
       const firstAddress = await api.getChangeAddress();
       const { C } = await import('lucid-cardano');
+      const encodedBalance = await api.getBalance();
 
       set((state) => ({
         ...state,
         api,
         walletLoading: null,
         walletName,
+        balance: valueToAssets(encodedBalance),
         address: C.Address.from_bytes(fromHex(firstAddress)).to_bech32(),
       }));
 
