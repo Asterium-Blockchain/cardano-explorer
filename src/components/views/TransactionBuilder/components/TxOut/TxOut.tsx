@@ -11,6 +11,8 @@ interface TxOutProps {
 
 const TxOut: React.FC<TxOutProps> = ({ address, amount, onRemove }) => {
   const lovelace = amount.find((a) => a.unit === 'lovelace')?.quantity;
+  const otherAssets = amount.filter((a) => a.unit !== 'lovelace');
+
   return (
     <Flex
       key={`${address}-${amount}`}
@@ -26,7 +28,8 @@ const TxOut: React.FC<TxOutProps> = ({ address, amount, onRemove }) => {
         </Text>
         <br />
         <Text as="code" fontSize={'lg'}>
-          {parseInt(lovelace || '0', 10) / 1000000} ADA
+          {parseInt(lovelace || '0', 10) / 1000000} ADA{' '}
+          {otherAssets.length > 0 && `+ ${otherAssets.length} tokens`}
         </Text>
       </Box>
       <CloseIcon
