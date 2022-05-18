@@ -6,6 +6,7 @@ import blockfrost from '@/utils/blockchain/blockfrost';
 import { getAddressStakeKey } from '@/utils/crypto';
 import prisma from 'prisma/client';
 import { ADA_HANDLE_POLICY_ID } from '@/constants';
+import koios from '@/utils/koios';
 
 interface AddressData {
   stakeAddress: string;
@@ -44,6 +45,11 @@ export const getStaticProps: GetStaticProps<AddressPageProps> = async (req) => {
     count: 26,
     page: 1,
   });
+
+  // const queryResult = await prisma.$queryRaw`
+  // `
+
+  // const { data } = await koios.get(`address_info?address=${address}`);
 
   return {
     props: {

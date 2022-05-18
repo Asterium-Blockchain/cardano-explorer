@@ -1,3 +1,4 @@
+import { Amount } from '@/types';
 import { C } from 'lucid-cardano';
 
 export function toADA(lovelace: string) {
@@ -28,6 +29,38 @@ export function amountToAssets(
     {},
   );
 }
+export const assetsToValue = (assets: Amount) => {
+  const multiAsset = C.MultiAsset.new();
+  const lovelace = assets.find((asset) => asset.unit === 'lovelace');
+  const policies = [
+    ...new Set(
+      assets
+        .filter((asset) => asset.unit !== 'lovelace')
+        .map((asset) => asset.unit.slice(0, 56)),
+    ),
+  ];
+  policies.forEach((policy) => {
+    const policyAssets = assets.filter(
+      (asset) => asset.unit.slice(0, 56) === policy,
+    );
+    const assetsValue = C.Assets.new();
+    policyAssets.forEach((asset) => {
+      assetsValue.insert(
+        C.AssetName.new(Buffer.from(asset.unit.slice(56), 'hex')),
+        C.BigNum.from_str(asset.quantity),
+      );
+    });
+    multiAsset.insert(
+      C.ScriptHash.from_bytes(Buffer.from(policy, 'hex')),
+      assetsValue,
+    );
+  });
+  const value = C.Value.new(
+    C.BigNum.from_str(lovelace ? lovelace.quantity : '0'),
+  );
+  if (assets.length > 1 || !lovelace) value.set_multiasset(multiAsset);
+  return value;
+};
 
 export function valueToAssets(value: string) {
   const parsedValue = C.Value.from_bytes(Buffer.from(value, 'hex'));

@@ -10,6 +10,9 @@ import createBlockchainLoadSlice, {
 import createLatestBlockSlice, {
   LatestBlockSlice,
 } from './createLatestBlockSlice';
+import createProtocolParamsSlice, {
+  ProtocolParamsSlice,
+} from './createProtocolParamsSlice';
 import createSearchSlice, { SearchSlice } from './createSearchSlice';
 import createTransactionBuilderSlice, {
   TransactionBuilderSlice,
@@ -22,7 +25,8 @@ export type AppState = SearchSlice &
   BlockchainLoadSlice &
   AddressTransactionsSlice &
   WalletSlice &
-  TransactionBuilderSlice;
+  TransactionBuilderSlice &
+  ProtocolParamsSlice;
 
 const useStore = create<AppState>((set, get) => ({
   ...createSearchSlice(set, get),
@@ -32,6 +36,7 @@ const useStore = create<AppState>((set, get) => ({
   ...createAddressTransactionsSlice(set, get),
   ...createWalletSlice(set),
   ...createTransactionBuilderSlice(set, get),
+  ...createProtocolParamsSlice(set),
 }));
 
 export default useStore;

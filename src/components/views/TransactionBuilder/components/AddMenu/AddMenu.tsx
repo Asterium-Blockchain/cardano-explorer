@@ -1,4 +1,7 @@
+import useProtocolParams from '@/hooks/useProtocolParams';
 import useStore from '@/store/useStore';
+import { Amount } from '@/types';
+import { assetsToValue } from '@/utils/crypto';
 import {
   Box,
   Button,
@@ -19,6 +22,11 @@ import {
   NumberInputStepper,
 } from '@chakra-ui/react';
 import { Field, Formik } from 'formik';
+import {
+  BigNum,
+  min_ada_required,
+} from 'lucid-cardano/custom_modules/cardano-multiplatform-lib-browser';
+import { useEffect } from 'react';
 import MultiAssetSelector from '../MultiAssetSelector';
 import MENU_CONSTANTS, { Prompt } from './menu-constants';
 
@@ -34,6 +42,9 @@ interface AddMenuProps {
 const AddMenu: React.FC<AddMenuProps> = ({ purpose, onClose, ...rest }) => {
   const addInput = useStore((state) => state.addInput);
   const addOutput = useStore((state) => state.addOutput);
+
+  const protocolParams = useProtocolParams();
+
   if (!purpose) {
     return null;
   }
@@ -62,6 +73,22 @@ const AddMenu: React.FC<AddMenuProps> = ({ purpose, onClose, ...rest }) => {
     }
     onClose();
   };
+
+  const handleChangeMultiAsset =
+    (field: any, form: any) => (selectedAmount: Amount) => {
+      form.setFieldValue(field.name, selectedAmount);
+      const minReq = min_ada_required(
+        assetsToValue(selectedAmount),
+        false,
+        BigNum.from_str(protocolParams?.coins_per_utxo_word || '0'),
+      ).to_str();
+      const minReqNum = parseInt(minReq, 10) / 1000000;
+      const currNum = parseInt(form.values.adaAmount, 10);
+
+      if (isNaN(currNum) || currNum < minReqNum) {
+        form.setFieldValue('adaAmount', minReqNum);
+      }
+    };
 
   return (
     <Drawer placement="right" onClose={onClose} {...rest} size="md">
@@ -121,9 +148,7 @@ const AddMenu: React.FC<AddMenuProps> = ({ purpose, onClose, ...rest }) => {
                           {({ field, form }: any) =>
                             selectFrom === 'BALANCE' ? (
                               <MultiAssetSelector
-                                onChange={(selectedAssets) =>
-                                  form.setFieldValue(field.name, selectedAssets)
-                                }
+                                onChange={handleChangeMultiAsset(field, form)}
                               />
                             ) : null
                           }
