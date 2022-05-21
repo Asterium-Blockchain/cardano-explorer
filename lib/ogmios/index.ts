@@ -15,7 +15,7 @@ const context: InteractionContext = await createInteractionContext(
     connection: {
       port: process.env.OGMIOS_PORT ? JSON.parse(process.env.OGMIOS_PORT) : 443,
       host: process.env.OGMIOS_HOST || 'ogmios-api.mainnet.dandelion.link',
-      tls: process.env.OGMIOS_USE_TLS === 'True',
+      tls: process.env.OGMIOS_USE_TLS !== 'False',
     },
   },
 );
