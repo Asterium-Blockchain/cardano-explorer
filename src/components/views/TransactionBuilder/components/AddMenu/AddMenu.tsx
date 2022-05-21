@@ -1,7 +1,7 @@
 import useProtocolParams from '@/hooks/useProtocolParams';
 import useStore from '@/store/useStore';
 import { Amount } from '@/types';
-import { assetsToValue } from '@/utils/crypto';
+import { assetsToValue } from '@/utils/blockchain/assetClasses';
 import {
   Box,
   Button,
