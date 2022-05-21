@@ -50,6 +50,7 @@
     "intercept-stdout": "0.1.2",
     "lucid-cardano": "0.2.2",
     "lunr": "2.3.9",
+    "minimist": "1.2.6",
     "moment": "2.29.3",
     "next": "12.1.5",
     "nextjs-progressbar": "0.0.14",
