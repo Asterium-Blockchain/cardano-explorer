@@ -1,4 +1,4 @@
-import blockfrost from '@/utils/blockchain/blockfrost';
+import blockfrost from '@lib/blockfrost';
 import { NextApiHandler } from 'next';
 
 export interface LatestBlockResponse {

@@ -15,7 +15,8 @@ interface DetailsTableProps {
   stakeKey: string | null;
   tokenCount: number;
   address: string;
-  adaHandle?: string;
+  utxoCount: number;
+  adaHandles: string[];
 }
 
 const DetailsTable: React.FC<DetailsTableProps> = ({
@@ -23,7 +24,8 @@ const DetailsTable: React.FC<DetailsTableProps> = ({
   stakeKey,
   tokenCount,
   address,
-  adaHandle,
+  utxoCount,
+  adaHandles,
 }) => {
   return (
     <TableContainer
@@ -52,25 +54,35 @@ const DetailsTable: React.FC<DetailsTableProps> = ({
           <Tr>
             <Th>Balance</Th>
             <Td textAlign={'right'}>
-              {toADA(balance)}
+              {parseInt(toADA(balance), 10).toLocaleString()}
               <Text fontSize={'xs'} ml="1" display="inline">
                 ADA
               </Text>
             </Td>
           </Tr>
           <Tr>
-            <Th>Native token {tokenCount !== 1 && 's'}</Th>
+            <Th>Native token{tokenCount !== 1 && 's'}</Th>
             <Td textAlign={'right'}>
-              <Text as="code">{tokenCount}</Text>
+              <Text as="code">{tokenCount.toLocaleString()}</Text>
             </Td>
           </Tr>
-          {adaHandle && (
+          <Tr>
+            <Th>UTxOs</Th>
+            <Td textAlign={'right'}>
+              <Text as="code">{utxoCount.toLocaleString()}</Text>
+            </Td>
+          </Tr>
+          {adaHandles.length > 0 && (
             <Tr>
               <Th>ADA Handle</Th>
               <Td textAlign={'right'}>
-                <Badge as="code" colorScheme={'orange'}>
-                  ${adaHandle}
-                </Badge>
+                {adaHandles.map((handle) => {
+                  return (
+                    <Badge as="code" colorScheme={'orange'} key={handle} ml="2">
+                      ${handle}
+                    </Badge>
+                  );
+                })}
               </Td>
             </Tr>
           )}

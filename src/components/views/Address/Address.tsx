@@ -23,8 +23,9 @@ const Address: React.FC<AddressPageProps> = ({
     isScript,
     tokenCount,
     stakeAddress,
-    adaHandle,
+    adaHandles,
     address,
+    utxoCount,
   } = addressData;
 
   const addressTransactions = useStore((state) => state.addressTransactions);
@@ -56,7 +57,8 @@ const Address: React.FC<AddressPageProps> = ({
         balance={lovelaceBalance}
         stakeKey={stakeAddress}
         tokenCount={tokenCount}
-        adaHandle={adaHandle}
+        adaHandles={adaHandles}
+        utxoCount={utxoCount}
       />
 
       <Heading size="md" mt="8" mb="6">

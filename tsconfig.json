@@ -17,7 +17,8 @@
     "paths": {
       "@/*": ["./src/*"],
       "@/public/*": ["./public/*"],
-      "@/utils/*": ["./src/utils/*"]
+      "@/utils/*": ["./src/utils/*"],
+      "@lib/*": ["./lib/*"]
     },
     "incremental": true
   },

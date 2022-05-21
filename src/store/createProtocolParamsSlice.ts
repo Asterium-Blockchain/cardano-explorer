@@ -1,4 +1,4 @@
-import blockfrost from '@/utils/blockchain/blockfrost';
+import blockfrost from '@lib/blockfrost';
 import browserBlockfrost from '@/utils/browserBlockfrost';
 import { SetState } from 'zustand';
 import { AppState } from './useStore';

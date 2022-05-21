@@ -1,15 +1,15 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
 import {
   Box,
   Container,
+  Icon,
   Link,
   SimpleGrid,
   Stack,
   Text,
   useColorModeValue,
 } from '@chakra-ui/react';
+import { GitHub, Twitter } from 'react-feather';
 import ListHeader from './components/ListHeader';
-import { Logo } from './components/Logo/Logo';
 
 const Footer = () => {
   return (
@@ -20,48 +20,41 @@ const Footer = () => {
     >
       <Container as={Stack} maxW={'container.xl'} py={10}>
         <SimpleGrid
-          templateColumns={{ sm: '1fr 1fr', md: '2fr 1fr 1fr 1fr 1fr' }}
+          templateColumns={{ sm: '1fr 1fr', md: '2fr 1fr' }}
           spacing={8}
         >
           <Stack spacing={6}>
             <Box>
-              <Logo color={useColorModeValue('gray.700', 'white')} />
+              <Text fontSize={'lg'} fontWeight={600}>
+                Asterium
+              </Text>
             </Box>
-            <Text fontSize={'sm'}>
-              © 2022 Chakra Templates. All rights reserved
+            <Text fontSize={'sm'} color="gray.500">
+              The Cardano community explorer and toolkit
             </Text>
           </Stack>
-          <Stack align={'flex-end'}>
-            <ListHeader>Product</ListHeader>
-            <Link href={'#'}>Overview</Link>
-            <Link href={'#'}>Features</Link>
-            <Link href={'#'}>Tutorials</Link>
-            <Link href={'#'}>Pricing</Link>
-            <Link href={'#'}>Releases</Link>
-          </Stack>
-          <Stack align={'flex-end'}>
-            <ListHeader>Company</ListHeader>
-            <Link href={'#'}>About</Link>
-            <Link href={'#'}>Press</Link>
-            <Link href={'#'}>Careers</Link>
-            <Link href={'#'}>Contact</Link>
-            <Link href={'#'}>Partners</Link>
-          </Stack>
-          <Stack align={'flex-end'}>
-            <ListHeader>Support</ListHeader>
-            <Link href={'#'}>Help Center</Link>
-            <Link href={'#'}>Terms of Service</Link>
-            <Link href={'#'}>Legal</Link>
-            <Link href={'#'}>Privacy Policy</Link>
-            <Link href={'#'}>Status</Link>
-          </Stack>
-          <Stack align={'flex-end'}>
+          <Stack align={'flex-end'} spacing={'3'}>
             <ListHeader>Follow Us</ListHeader>
-            <Link href={'#'}>Facebook</Link>
-            <Link href={'#'}>Twitter</Link>
-            <Link href={'#'}>Dribbble</Link>
-            <Link href={'#'}>Instagram</Link>
-            <Link href={'#'}>LinkedIn</Link>
+            <Link
+              href={'https://twitter.com/scheredev'}
+              color={'gray.500'}
+              display="flex"
+              alignItems={'center'}
+              gap="2"
+            >
+              <Icon as={Twitter} size="sm" />
+              Twitter
+            </Link>
+            <Link
+              href={'https://github.com/Asterium-Blockchain'}
+              color={'gray.500'}
+              display="flex"
+              alignItems={'center'}
+              gap="2"
+            >
+              <Icon as={GitHub} size="sm" />
+              Github
+            </Link>
           </Stack>
         </SimpleGrid>
       </Container>

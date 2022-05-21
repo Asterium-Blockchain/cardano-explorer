@@ -108,7 +108,7 @@ const TransactionBodyPanel = () => {
             <Heading size={'md'} mt="2" textAlign={'center'}>
               Outputs
             </Heading>
-            <Box mt="6">
+            <Box mt="6" maxH={'60vh'} overflowY="auto">
               {outputs.map(({ address, amount }, index) => (
                 <TxOut
                   key={`${address}-${amount}`}

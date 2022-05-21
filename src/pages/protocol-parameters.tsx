@@ -1,7 +1,7 @@
 import { GetStaticProps, NextPage } from 'next';
 
 import ProtocolParams from '@/components/views/ProtocolParams';
-import blockfrost from '@/utils/blockchain/blockfrost';
+import blockfrost from '@lib/blockfrost';
 import camelcaseKeys from 'camelcase-keys';
 
 export interface ProtocolParamsProps {

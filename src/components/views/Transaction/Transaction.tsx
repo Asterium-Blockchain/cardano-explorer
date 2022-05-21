@@ -1,4 +1,4 @@
-import blockfrost from '@/utils/blockchain/blockfrost';
+import blockfrost from '@lib/blockfrost';
 import { Box, Container, Flex, Heading, Tag } from '@chakra-ui/react';
 import DetailsTable from './components/DetailsTable';
 import { TransactionInput } from './components/TransactionInput/TransactionInput';

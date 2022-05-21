@@ -2,19 +2,22 @@ import { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 
 import { isAddress } from '@/utils/crypto/validation';
 import Address from '@/components/views/Address';
-import blockfrost from '@/utils/blockchain/blockfrost';
+import blockfrost from '@lib/blockfrost/index';
 import { getAddressStakeKey } from '@/utils/crypto';
-import prisma from 'prisma/client';
 import { ADA_HANDLE_POLICY_ID } from '@/constants';
-import koios from '@/utils/koios';
+import { stateQueryClient } from '@lib/ogmios';
+import { Assets } from 'lucid-cardano';
+import { hex2a } from '@/utils/strings';
+import { findAdaHandles } from '@/utils/blockchain/assetClasses';
 
 interface AddressData {
   stakeAddress: string;
   lovelaceBalance: string;
   tokenCount: number;
   isScript: boolean;
-  adaHandle: string;
+  adaHandles: string[];
   address: string;
+  utxoCount: number;
 }
 export interface AddressPageProps {
   transactions: Awaited<ReturnType<typeof blockfrost.addressesTransactions>>;
@@ -41,28 +44,42 @@ export const getStaticProps: GetStaticProps<AddressPageProps> = async (req) => {
 
   const stakeAddress = getAddressStakeKey(address);
 
-  const transactions = await blockfrost.addressesTransactions(address, {
-    count: 26,
-    page: 1,
-  });
+  const utxos = await stateQueryClient.utxo([address]);
 
-  // const queryResult = await prisma.$queryRaw`
-  // `
+  const { lovelace, tokenCount, adaHandles } = utxos.reduce(
+    (acc, [, output]) => ({
+      lovelace: acc.lovelace + BigInt(output.value.coins),
+      tokenCount:
+        acc.tokenCount + Object.keys(output.value.assets || {}).length,
+      adaHandles:
+        output.value.assets && acc.adaHandles.length <= 5
+          ? (acc.adaHandles as any).concat(findAdaHandles(output.value.assets))
+          : acc.adaHandles,
+    }),
+    {
+      lovelace: BigInt(0),
+      tokenCount: 0,
+      adaHandles: [],
+    },
+  );
 
-  // const { data } = await koios.get(`address_info?address=${address}`);
+  // const transactions = await blockfrost.addressesTransactions(address, {
+  //   count: 26,
+  //   page: 1,
+  // });
 
   return {
     props: {
-      transactions,
-      hasMore: transactions.length === 26,
-      // TODO: Calculate these things
+      transactions: [],
+      hasMore: false, // transactions.length === 26,
       addressData: {
         stakeAddress: stakeAddress || '',
-        lovelaceBalance: '12312312312' || '0',
-        adaHandle: 'martin',
+        lovelaceBalance: lovelace.toString(),
+        adaHandles,
+        utxoCount: utxos.length,
         address,
         isScript: false,
-        tokenCount: 20,
+        tokenCount,
       },
     },
   };

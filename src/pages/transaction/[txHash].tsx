@@ -1,5 +1,5 @@
 import { GetStaticPaths, GetStaticProps, NextPage } from 'next';
-import blockfrost from '@/utils/blockchain/blockfrost';
+import blockfrost from '@lib/blockfrost';
 
 import { isTxHash } from '@/utils/crypto/validation';
 import Transaction from '@/components/views/Transaction';
