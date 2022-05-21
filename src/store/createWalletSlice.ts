@@ -1,6 +1,6 @@
 import { Amount, CardanoApi } from '@/types';
 import { valueToAssets } from '@/utils/blockchain/assetClasses';
-import { fromHex } from 'lucid-cardano';
+import { C, fromHex } from 'lucid-cardano';
 import { SetState } from 'zustand';
 import { AppState } from './useStore';
 
@@ -28,7 +28,6 @@ const createWalletSlice = (set: SetState<AppState>) => ({
         walletName
       ]?.enable();
       const firstAddress = await api.getChangeAddress();
-      const { C } = await import('lucid-cardano');
       const encodedBalance = await api.getBalance();
 
       set((state) => ({

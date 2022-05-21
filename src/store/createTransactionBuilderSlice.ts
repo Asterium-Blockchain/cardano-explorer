@@ -1,4 +1,4 @@
-import { amountToAssets } from '@/utils/crypto';
+import { amountToAssets } from '@/utils/blockchain/assetClasses';
 import { decodeLucidError } from '@/utils/strings';
 import { Blockfrost, C, Lucid, Tx, TxComplete } from 'lucid-cardano';
 import { GetState, SetState } from 'zustand';

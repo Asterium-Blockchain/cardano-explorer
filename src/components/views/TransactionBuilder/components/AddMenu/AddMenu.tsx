@@ -22,10 +22,7 @@ import {
   NumberInputStepper,
 } from '@chakra-ui/react';
 import { Field, Formik } from 'formik';
-import {
-  BigNum,
-  min_ada_required,
-} from 'lucid-cardano/custom_modules/cardano-multiplatform-lib-browser';
+import { C } from 'lucid-cardano';
 import { useEffect } from 'react';
 import MultiAssetSelector from '../MultiAssetSelector';
 import MENU_CONSTANTS, { Prompt } from './menu-constants';
@@ -77,10 +74,10 @@ const AddMenu: React.FC<AddMenuProps> = ({ purpose, onClose, ...rest }) => {
   const handleChangeMultiAsset =
     (field: any, form: any) => (selectedAmount: Amount) => {
       form.setFieldValue(field.name, selectedAmount);
-      const minReq = min_ada_required(
+      const minReq = C.min_ada_required(
         assetsToValue(selectedAmount),
         false,
-        BigNum.from_str(protocolParams?.coins_per_utxo_word || '0'),
+        C.BigNum.from_str(protocolParams?.coins_per_utxo_word || '0'),
       ).to_str();
       const minReqNum = parseInt(minReq, 10) / 1000000;
       const currNum = parseInt(form.values.adaAmount, 10);

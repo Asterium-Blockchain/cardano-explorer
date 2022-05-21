@@ -1,4 +1,3 @@
-import { Amount } from '@/types';
 import { C } from 'lucid-cardano';
 
 export function toADA(lovelace: string) {
