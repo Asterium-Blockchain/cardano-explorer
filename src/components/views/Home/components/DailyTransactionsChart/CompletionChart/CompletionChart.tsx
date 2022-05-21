@@ -1,18 +1,20 @@
 import theme from '@/theme';
-import { Box, Text } from '@chakra-ui/react';
-import { Pie, PieChart, ResponsiveContainer } from 'recharts';
+import { Box, LayoutProps, Text } from '@chakra-ui/react';
+import { Pie, PieChart } from 'recharts';
 
 interface CompletionChartProps {
   completion: number;
   title: string;
+  height: LayoutProps['height'];
 }
 const CompletionChart: React.FC<CompletionChartProps> = ({
   completion,
   title,
+  height,
 }) => {
   const completionHundreds = Math.round(completion * 10000) / 100;
   return (
-    <Box height={'50%'}>
+    <Box height={height}>
       <Box position={'relative'} height="100%">
         <Box
           position={'absolute'}
@@ -28,30 +30,28 @@ const CompletionChart: React.FC<CompletionChartProps> = ({
             {title}
           </Text>
         </Box>
-        <ResponsiveContainer>
-          <PieChart>
-            <Pie
-              data={[
-                {
-                  name: 'Staked ADA',
-                  value: completionHundreds,
-                  fill: 'rgba(104, 211, 145, 0.3)',
-                  stroke: theme.colors.green[300],
-                },
-                {
-                  name: 'Unstaked ADA',
-                  value: 100 - completionHundreds,
-                  fill: 'none',
-                },
-              ]}
-              dataKey={'value'}
-              innerRadius={70}
-              outerRadius={90}
-              paddingAngle={5}
-              stroke="none"
-            />
-          </PieChart>
-        </ResponsiveContainer>
+        <PieChart width={240} height={210}>
+          <Pie
+            data={[
+              {
+                name: 'Staked ADA',
+                value: completionHundreds,
+                fill: 'rgba(104, 211, 145, 0.3)',
+                stroke: theme.colors.green[300],
+              },
+              {
+                name: 'Unstaked ADA',
+                value: 100 - completionHundreds,
+                fill: 'none',
+              },
+            ]}
+            dataKey={'value'}
+            innerRadius={70}
+            outerRadius={90}
+            paddingAngle={5}
+            stroke="none"
+          />
+        </PieChart>
       </Box>
     </Box>
   );

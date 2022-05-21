@@ -27,7 +27,7 @@ import DailyTransactionsChart from './components/DailyTransactionsChart';
 import CompletionChart from './components/DailyTransactionsChart/CompletionChart';
 import { ChevronRightIcon } from '@chakra-ui/icons';
 import Link from 'next/link';
-import { Settings, Shuffle, Tablet, Tool } from 'react-feather';
+import { Settings, Tablet, Tool } from 'react-feather';
 import theme from '@/theme';
 
 const Home: React.FC<HomepageProps> = ({
@@ -165,11 +165,13 @@ const Home: React.FC<HomepageProps> = ({
           <CompletionChart
             completion={stakedAdaPercentage}
             title={'Staked ADA'}
+            height="50%"
           />
           <Spacer height={'5'} />
           <CompletionChart
             completion={stakedAdaPercentage}
             title={'Staked ADA'}
+            height="50%"
           />
         </GridItem>
         <GridItem
