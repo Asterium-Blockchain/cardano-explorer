@@ -1,6 +1,6 @@
-# Cardano explorer
+# Cardano community explorer
 
-An open explorer for the Cardano blockchain
+An open explorer for the Cardano blockchain built by the community
 
 ### Getting started
 
@@ -14,4 +14,4 @@ An open explorer for the Cardano blockchain
 2. Open up draft PR if it's not finished
 3. If it is, please request a review
 
-Contributions are welcome!
+Contributions are welcome! I'm an open-source newbie, so any constructive criticism is also welcome ;)
