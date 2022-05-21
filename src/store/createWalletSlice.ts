@@ -1,5 +1,5 @@
 import { Amount, CardanoApi } from '@/types';
-import { valueToAssets } from '@/utils/crypto';
+import { valueToAssets } from '@/utils/blockchain/assetClasses';
 import { fromHex } from 'lucid-cardano';
 import { SetState } from 'zustand';
 import { AppState } from './useStore';
