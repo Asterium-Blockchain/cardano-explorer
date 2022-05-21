@@ -5,6 +5,7 @@ import {
   Container,
   Flex,
   Heading,
+  Icon,
   Input,
   InputGroup,
   InputLeftElement,
@@ -22,6 +23,7 @@ import { truncateString } from '@/utils/strings';
 import useAdaPrice from '@/hooks/useAdaPrice';
 import useBlockchainLoad from '@/hooks/useBlockhainLoad';
 import WalletConnector from './components/WalletConnector';
+import Image from 'next/image';
 
 const getBlockchainLoadColor = (
   load: number | null,
@@ -79,7 +81,14 @@ const Navbar = () => {
         <Box flexGrow={0.1}>
           <Link href={'/'} passHref>
             <a>
-              <Heading size={'md'}>Asterium</Heading>
+              <Heading size={'md'}>
+                <Image
+                  src="/icons/asterium-logo.svg"
+                  alt="Asterium logo"
+                  width={35}
+                  height={35}
+                />
+              </Heading>
             </a>
           </Link>
         </Box>

@@ -8,6 +8,7 @@ import {
   Text,
   useColorModeValue,
 } from '@chakra-ui/react';
+import Image from 'next/image';
 import { GitHub, Twitter } from 'react-feather';
 import ListHeader from './components/ListHeader';
 
@@ -20,11 +21,17 @@ const Footer = () => {
     >
       <Container as={Stack} maxW={'container.xl'} py={10}>
         <SimpleGrid
-          templateColumns={{ sm: '1fr 1fr', md: '2fr 1fr' }}
+          templateColumns={{ sm: '1fr 1fr', md: '1fr 1fr' }}
           spacing={8}
         >
-          <Stack spacing={6}>
-            <Box>
+          <Stack spacing={3}>
+            <Box display={'flex'} alignItems="center" gap="2">
+              <Image
+                src="/icons/asterium-logo.svg"
+                width={25}
+                height={25}
+                alt="asterium-logo"
+              />
               <Text fontSize={'lg'} fontWeight={600}>
                 Asterium
               </Text>

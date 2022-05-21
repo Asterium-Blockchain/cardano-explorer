@@ -30,7 +30,7 @@ const Transaction: React.FC<TransactionProps> = ({ transaction, utxos }) => {
       <DetailsTable transaction={transaction} />
 
       <Flex gap={'3'} mt="6">
-        <Box flexGrow={1}>
+        <Box w={'50%'}>
           <Heading size="md" textAlign={'center'} my="4">
             Inputs
           </Heading>
@@ -51,7 +51,7 @@ const Transaction: React.FC<TransactionProps> = ({ transaction, utxos }) => {
             ),
           )}
         </Box>
-        <Box flexGrow={1}>
+        <Box w={'50%'}>
           <Heading size="md" textAlign={'center'} my="4">
             Outputs
           </Heading>

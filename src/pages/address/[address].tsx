@@ -4,10 +4,7 @@ import { isAddress } from '@/utils/crypto/validation';
 import Address from '@/components/views/Address';
 import blockfrost from '@lib/blockfrost/index';
 import { getAddressStakeKey } from '@/utils/crypto';
-import { ADA_HANDLE_POLICY_ID } from '@/constants';
 import { stateQueryClient } from '@lib/ogmios';
-import { Assets } from 'lucid-cardano';
-import { hex2a } from '@/utils/strings';
 import { findAdaHandles } from '@/utils/blockchain/assetClasses';
 
 interface AddressData {
@@ -63,15 +60,15 @@ export const getStaticProps: GetStaticProps<AddressPageProps> = async (req) => {
     },
   );
 
-  // const transactions = await blockfrost.addressesTransactions(address, {
-  //   count: 26,
-  //   page: 1,
-  // });
+  const transactions = await blockfrost.addressesTransactions(address, {
+    count: 26,
+    page: 1,
+  });
 
   return {
     props: {
-      transactions: [],
-      hasMore: false, // transactions.length === 26,
+      transactions: transactions.slice(0, 25),
+      hasMore: transactions.length === 26,
       addressData: {
         stakeAddress: stakeAddress || '',
         lovelaceBalance: lovelace.toString(),
