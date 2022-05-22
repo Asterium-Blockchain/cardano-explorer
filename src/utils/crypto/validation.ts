@@ -66,7 +66,7 @@ export const getUrlFromType = (type: QueryType, value: string) => {
     case 'POLICY_ID':
       return '/policy/' + value;
     case 'ASSET_ID':
-      return '/asset/' + value;
+      return '/token/' + value;
     case 'ADDRESS':
       return '/address/' + value;
     case 'STAKE_KEY':

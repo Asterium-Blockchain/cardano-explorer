@@ -1,0 +1,22 @@
+.imageWrapper {
+  .imagePlaceholder {
+    border-radius: 5px;
+  }
+
+  .image {
+    border-radius: 5px;
+    object-fit: contain;
+    opacity: 1;
+    transition: opacity 200ms;
+
+    &.isLoading {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    &.isError {
+      display: none;
+    }
+  }
+}
