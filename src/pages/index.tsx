@@ -4,11 +4,22 @@ import blockfrost from '@lib/blockfrost';
 import Home from '@/components/views/Home';
 import prisma from 'prisma/client';
 import axios from 'axios';
+import koios from '@/utils/koios';
+
+interface TotalsData {
+  epoch_no: number;
+  circulation: string;
+  treasury: string;
+  reward: string;
+  reserves: string;
+  supply: string;
+}
 
 export interface HomepageProps {
   latestBlock: Awaited<ReturnType<typeof blockfrost.blocksLatest>>;
   dailyTransactions: any[];
   stakedAdaPercentage: number;
+  totalsData: TotalsData;
 }
 
 export const getStaticProps: GetStaticProps<HomepageProps> = async () => {
@@ -29,6 +40,11 @@ export const getStaticProps: GetStaticProps<HomepageProps> = async () => {
   // `) as any;
 
   const { data } = await axios.get('https://pool.pm/total.json');
+  const { data: koiosData } = await koios.get<[TotalsData]>('totals', {
+    params: {
+      _epoch_no: latestBlock.epoch,
+    },
+  });
   const { supply, stake } = data;
 
   return {
@@ -36,6 +52,7 @@ export const getStaticProps: GetStaticProps<HomepageProps> = async () => {
       latestBlock,
       dailyTransactions: [],
       stakedAdaPercentage: stake / supply,
+      totalsData: koiosData[0],
     },
     revalidate: 120,
   };

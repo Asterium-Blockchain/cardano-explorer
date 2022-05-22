@@ -1,18 +1,32 @@
 import theme from '@/theme';
 import { Box, LayoutProps, Text } from '@chakra-ui/react';
-import { Pie, PieChart } from 'recharts';
+import { PieChart, Pie } from 'recharts';
+import { hexToRgba } from '@/utils/misc';
 
 interface CompletionChartProps {
   completion: number;
   title: string;
   height: LayoutProps['height'];
+  color?: string;
 }
 const CompletionChart: React.FC<CompletionChartProps> = ({
   completion,
   title,
   height,
+  color = theme.colors.green[300],
 }) => {
   const completionHundreds = Math.round(completion * 10000) / 100;
+  const chartData = [
+    {
+      value: completionHundreds,
+      fill: hexToRgba(color, 0.2),
+      stroke: color,
+    },
+    {
+      value: 100 - completionHundreds,
+      fill: 'none',
+    },
+  ];
   return (
     <Box height={height}>
       <Box position={'relative'} height="100%">
@@ -32,19 +46,7 @@ const CompletionChart: React.FC<CompletionChartProps> = ({
         </Box>
         <PieChart width={240} height={210}>
           <Pie
-            data={[
-              {
-                name: 'Staked ADA',
-                value: completionHundreds,
-                fill: 'rgba(104, 211, 145, 0.3)',
-                stroke: theme.colors.green[300],
-              },
-              {
-                name: 'Unstaked ADA',
-                value: 100 - completionHundreds,
-                fill: 'none',
-              },
-            ]}
+            data={chartData}
             dataKey={'value'}
             innerRadius={70}
             outerRadius={90}

@@ -13,5 +13,6 @@ export const SUPPORTED_WALLETS: WalletName[] = [
   'flint',
   // 'gero',
 ];
+export const ADA_MAX_SUPPLY = BigInt('45000000000000000');
 
 export const EPOCH_DURATION = 432000;

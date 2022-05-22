@@ -81,14 +81,12 @@ const Navbar = () => {
         <Box flexGrow={0.1}>
           <Link href={'/'} passHref>
             <a>
-              <Heading size={'md'}>
-                <Image
-                  src="/icons/asterium-logo.svg"
-                  alt="Asterium logo"
-                  width={35}
-                  height={35}
-                />
-              </Heading>
+              <Image
+                src="/icons/asterium-logo.svg"
+                alt="Asterium logo"
+                width={35}
+                height={35}
+              />
             </a>
           </Link>
         </Box>

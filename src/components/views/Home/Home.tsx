@@ -2,7 +2,7 @@ import styles from './styles.module.scss';
 
 import { useMemo, useEffect } from 'react';
 
-import { EPOCH_DURATION } from '@/constants';
+import { ADA_MAX_SUPPLY, EPOCH_DURATION } from '@/constants';
 import useAdaPrice from '@/hooks/useAdaPrice';
 import useCountdown from '@/hooks/useCountdown';
 import useLatestBlock from '@/hooks/useLatestBlock';
@@ -34,6 +34,7 @@ const Home: React.FC<HomepageProps> = ({
   latestBlock,
   dailyTransactions,
   stakedAdaPercentage,
+  totalsData,
 }) => {
   const adaPrice = useAdaPrice();
   const realtimeLatestBlock = useLatestBlock();
@@ -165,13 +166,24 @@ const Home: React.FC<HomepageProps> = ({
           <CompletionChart
             completion={stakedAdaPercentage}
             title={'Staked ADA'}
+            completeName="Staked ADA"
             height="50%"
+            uncompleteName="Unstaked ADA"
           />
           <Spacer height={'5'} />
           <CompletionChart
-            completion={stakedAdaPercentage}
-            title={'Staked ADA'}
+            completion={
+              parseInt(
+                (
+                  (BigInt(totalsData.circulation) * BigInt(1000000)) /
+                  ADA_MAX_SUPPLY
+                ).toString(),
+                10,
+              ) / 1000000
+            }
+            title={'Minted / Total'}
             height="50%"
+            color={theme.colors.purple[400]}
           />
         </GridItem>
         <GridItem
