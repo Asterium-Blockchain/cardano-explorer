@@ -54,3 +54,7 @@ export const randomID = () => {
     Math.random().toString(36).substring(2, 15)
   );
 };
+
+export const isHex = (str: string) => {
+  return Boolean(str.match(/^[0-9a-f]+$/i));
+};

@@ -23,8 +23,8 @@ import {
 } from '@chakra-ui/react';
 import { Field, Formik } from 'formik';
 import { C } from 'lucid-cardano';
-import { useEffect } from 'react';
 import MultiAssetSelector from '../MultiAssetSelector';
+import PlutusDataCreator from '../PlutusDataCreator';
 import MENU_CONSTANTS, { Prompt } from './menu-constants';
 
 export type MenuPurpose = 'ADD_OUTPUT' | 'ADD_INPUT';
@@ -112,6 +112,9 @@ const AddMenu: React.FC<AddMenuProps> = ({ purpose, onClose, ...rest }) => {
                       isInvalid={!!errors[name] && !!touched[name]}
                       mt={'3'}
                     >
+                      {type === 'plutusData' && (
+                        <PlutusDataCreator title={name} />
+                      )}
                       {type === 'number' && (
                         <Field validate={validate} name={name}>
                           {({ field, form }: any) => (

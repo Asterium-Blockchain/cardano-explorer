@@ -166,9 +166,7 @@ const Home: React.FC<HomepageProps> = ({
           <CompletionChart
             completion={stakedAdaPercentage}
             title={'Staked ADA'}
-            completeName="Staked ADA"
             height="50%"
-            uncompleteName="Unstaked ADA"
           />
           <Spacer height={'5'} />
           <CompletionChart

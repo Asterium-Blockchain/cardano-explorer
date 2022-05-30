@@ -3,8 +3,8 @@ import { MenuPurpose } from './AddMenu';
 
 export interface Prompt {
   type: string;
-  placeholder: string;
   name: string;
+  placeholder?: string;
   validate?: (value: any) => string | undefined;
   initialValue?: any;
   selectFrom?: 'BALANCE';
@@ -27,7 +27,15 @@ const MENU_CONSTANTS: Record<MenuPurpose, MenuConstantItem> = {
       {
         type: 'number',
         name: 'txId',
-        placeholder: 'Enter transaction ID',
+        placeholder: 'Enter transaction index',
+      },
+      {
+        type: 'plutusData',
+        name: 'redeemer',
+      },
+      {
+        type: 'plutusData',
+        name: 'datum',
       },
     ],
   },

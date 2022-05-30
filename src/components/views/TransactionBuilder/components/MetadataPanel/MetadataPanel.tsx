@@ -65,18 +65,19 @@ const MetadataPanel = () => {
   }, [keyValues, setMetadata]);
 
   return (
-    <Flex gap="4" flexGrow={1} alignItems="stretch">
+    <Flex gap="4" flexGrow={1} alignItems="stretch" position={'relative'}>
       <Box w="50%" p="3">
         {Object.entries(keyValues).map(([, { id }]) => (
           <Flex key={id} width="100%" my={2} gap="2" alignItems={'center'}>
             <Input
-              w="45%"
-              placeholder="Key"
+              w="15%"
+              placeholder="Label"
               onChange={handleChangeKey(id)}
+              type="number"
               maxLength={64}
             />
             <Input
-              w="45%"
+              w="75%"
               placeholder="Value"
               onChange={handleChangeValue(id)}
               maxLength={64}
@@ -89,24 +90,23 @@ const MetadataPanel = () => {
             />
           </Flex>
         ))}
-        <Button
-          variant={'outline'}
-          rightIcon={<SmallAddIcon />}
-          size="sm"
-          onClick={addKeyValue}
-          mt="2"
-          mx="auto"
-        >
-          Add key/value pair
-        </Button>
+        {Object.keys(keyValues || {}).length < 14 && (
+          <Button
+            variant={'outline'}
+            rightIcon={<SmallAddIcon />}
+            size="sm"
+            onClick={addKeyValue}
+            mt="2"
+            mx="auto"
+          >
+            Add label/value pair
+          </Button>
+        )}
+        <Text position={'absolute'} color="gray.500" left={0} bottom={0}>
+          * Other data types are not supported yet
+        </Text>
       </Box>
-      <Box
-        bg={'gray.600'}
-        w="50%"
-        borderRadius={'md'}
-        p="4"
-        overflowX={'scroll'}
-      >
+      <Box bg={'gray.600'} w="50%" borderRadius={'md'} p="4" overflowX={'auto'}>
         {metadata && Object.keys(metadata).length ? (
           <Text as="pre">{JSON.stringify(metadata, null, 2)}</Text>
         ) : (

@@ -1,3 +1,4 @@
+import DottedPrompt from '@/components/shared/DottedPrompt';
 import useWallet from '@/hooks/useWallet';
 import useStore from '@/store/useStore';
 import {
@@ -89,20 +90,9 @@ const TransactionBodyPanel = () => {
                 </Text>
               </Box>
             </Box>
-            <Box
-              borderStyle={'dotted'}
-              px="2"
-              py="6"
-              borderColor={'gray.600'}
-              borderWidth="1px"
-              my={'2'}
-              borderRadius={'md'}
-              cursor={'pointer'}
-              _hover={{ opacity: 0.8 }}
-              onClick={openModal('ADD_INPUT')}
-            >
-              <Text textAlign={'center'}>+ Add script input</Text>
-            </Box>
+            <DottedPrompt onClick={openModal('ADD_INPUT')}>
+              + Add script input
+            </DottedPrompt>
           </GridItem>
           <GridItem colStart={2} colEnd={4} rowStart={1} rowEnd={6}>
             <Heading size={'md'} mt="2" textAlign={'center'}>
@@ -117,20 +107,9 @@ const TransactionBodyPanel = () => {
                   onRemove={outputRemover(index)}
                 />
               ))}
-              <Box
-                borderStyle={'dotted'}
-                px="2"
-                py="6"
-                borderColor={'gray.600'}
-                borderWidth="1px"
-                my={'2'}
-                borderRadius={'md'}
-                cursor={'pointer'}
-                _hover={{ opacity: 0.8 }}
-                onClick={openModal('ADD_OUTPUT')}
-              >
-                <Text textAlign={'center'}>+ Add output</Text>
-              </Box>
+              <DottedPrompt onClick={openModal('ADD_OUTPUT')}>
+                + Add output
+              </DottedPrompt>
             </Box>
           </GridItem>
           <GridItem
