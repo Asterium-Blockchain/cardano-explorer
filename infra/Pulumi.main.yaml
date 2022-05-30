@@ -1,0 +1,5 @@
+config:
+  gpc:project: cardano-explorer-351314
+  gpc:zone: us-central1-a
+  postgresql:password:
+    secure: AAABAO4RwbR170aQeQtSkBAQtj7hPLVr/1kNaZ1CbYcpP3wwo1abtcoI5V4PhkK/rU0tHZ4+qK4=
