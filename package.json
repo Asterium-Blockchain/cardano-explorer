@@ -19,7 +19,6 @@
     "format": "prettier --ignore-path .gitignore \"src/**/*.+(ts|js|tsx)\" --write",
     "postbuild": "yarn test",
     "postinstall": "husky install",
-    "test": "jest --no-cache",
     "commit": "cz"
   },
   "lint-staged": {
