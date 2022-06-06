@@ -103,36 +103,36 @@ const createTransactionBuilderSlice = (
         return;
       }
 
-      await Lucid.initialize(
-        new Blockfrost(
-          'https://cardano-mainnet.blockfrost.io/api/v0',
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          process.env.NEXT_PUBLIC_BLOCKFROST_KEY,
-        ),
-        'Mainnet',
-      );
+      // await Lucid.initialize(
+      //   new Blockfrost(
+      //     'https://cardano-mainnet.blockfrost.io/api/v0',
+      //     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //     // @ts-ignore
+      //     process.env.NEXT_PUBLIC_BLOCKFROST_KEY,
+      //   ),
+      //   'Mainnet',
+      // );
 
-      await Lucid.selectWallet(wallet);
+      // await Lucid.selectWallet(wallet);
 
-      let tx = Tx.new();
+      // let tx = Tx.new();
 
-      outputs.forEach(({ address, amount }) => {
-        tx = tx.payToAddress(address, amountToAssets(amount));
-      });
+      // outputs.forEach(({ address, amount }) => {
+      //   tx = tx.payToAddress(address, amountToAssets(amount));
+      // });
 
-      const completed = await tx.complete();
+      // const completed = await tx.complete();
 
-      const transactionBody = C.TransactionBody.from_bytes(
-        completed.txComplete.body().to_bytes(),
-      );
+      // const transactionBody = C.TransactionBody.from_bytes(
+      //   completed.txComplete.body().to_bytes(),
+      // );
 
-      set((state) => ({
-        ...state,
-        isBuilding: false,
-        rawTx: completed,
-        fee: transactionBody.fee().to_str(),
-      }));
+      // set((state) => ({
+      //   ...state,
+      //   isBuilding: false,
+      //   rawTx: completed,
+      //   fee: transactionBody.fee().to_str(),
+      // }));
     } catch (error) {
       set((state) => ({
         ...state,
@@ -145,9 +145,9 @@ const createTransactionBuilderSlice = (
     set((state) => ({ ...state, isBuilding: true, builderError: null }));
     const rawTx = get().rawTx!;
     try {
-      const signed = (await rawTx.sign()).complete();
-      const txHash = await signed.submit();
-      set((state) => ({ ...state, isBuilding: false, txHash }));
+      // const signed = (await rawTx.sign()).complete();
+      // const txHash = await signed.submit();
+      // set((state) => ({ ...state, isBuilding: false, txHash }));
     } catch (error) {
       set((state) => ({
         ...state,

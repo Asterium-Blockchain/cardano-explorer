@@ -22,6 +22,6 @@
     },
     "incremental": true
   },
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules", "infra"],
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"]
 }
