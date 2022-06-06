@@ -23,14 +23,10 @@ const DailyTransactionsChart: React.FC<DailyTransactionsChartProps> = ({
 }) => {
   const mappedData = useMemo(
     () =>
-      dailyTransactions
-        .sort(
-          (a, b) => moment(a.block_time).unix() - moment(b.block_time).unix(),
-        )
-        .map((t, i) => ({
-          day: moment(t.block_time).format('MM/DD'),
-          count: t.count,
-        })),
+      dailyTransactions.map((t) => ({
+        day: moment(t.day).format('MM/DD'),
+        count: t.tx_count,
+      })),
     [dailyTransactions],
   );
 

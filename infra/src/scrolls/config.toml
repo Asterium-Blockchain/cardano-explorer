@@ -1,0 +1,22 @@
+# get data from a relay node
+[source]
+type = "N2N"
+address = "relays-new.cardano-mainnet.iohk.io:3001"
+
+# enable the "UTXO by Address" collection
+[[reducers]]
+type = "UtxoByAddress"
+
+
+# store the collections in a local Redis
+[storage]
+type = "Redis"
+connection_params = "redis://127.0.0.1:6379"
+
+# start reading from an arbitrary point in the chain
+[intersect]
+type = "Tip"
+
+# let Scrolls know that we're working with mainnet
+[chain]
+type = "Mainnet"
