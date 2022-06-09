@@ -7,6 +7,7 @@ import axios from 'axios';
 import koios from '@/utils/koios';
 import { dateToSlot } from '@/utils/blockchain/time';
 import moment from 'moment';
+import SEO from '@/components/shared/SEO';
 
 interface TotalsData {
   epoch_no: number;
@@ -63,7 +64,12 @@ export const getStaticProps: GetStaticProps<HomepageProps> = async () => {
 };
 
 const HomePage: NextPage<HomepageProps> = (props) => {
-  return <Home {...props} />;
+  return (
+    <>
+      <SEO />
+      <Home {...props} />
+    </>
+  );
 };
 
 export default HomePage;
