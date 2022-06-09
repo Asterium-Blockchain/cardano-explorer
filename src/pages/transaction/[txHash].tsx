@@ -7,6 +7,7 @@ import Transaction from '@/components/views/Transaction';
 interface TransactionPageProps {
   transaction: Awaited<ReturnType<typeof blockfrost.txs>>;
   utxos: Awaited<ReturnType<typeof blockfrost.txsUtxos>>;
+  metadata: Awaited<ReturnType<typeof blockfrost.txsMetadata>>;
 }
 
 export const getStaticPaths: GetStaticPaths = () => {
@@ -30,20 +31,19 @@ export const getStaticProps: GetStaticProps<TransactionPageProps> = async (
 
   const transaction = await blockfrost.txs(txHash);
   const utxos = await blockfrost.txsUtxos(txHash);
+  const metadata = await blockfrost.txsMetadata(txHash);
 
   return {
     props: {
       transaction,
-      utxos: utxos,
+      utxos,
+      metadata,
     },
   };
 };
 
-const TransactionPage: NextPage<TransactionPageProps> = ({
-  transaction,
-  utxos,
-}) => {
-  return <Transaction transaction={transaction} utxos={utxos} />;
+const TransactionPage: NextPage<TransactionPageProps> = (props) => {
+  return <Transaction {...props} />;
 };
 
 export default TransactionPage;

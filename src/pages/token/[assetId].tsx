@@ -6,6 +6,7 @@ import { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 export interface AssetPageProps {
   asset: Awaited<ReturnType<typeof blockfrost.assetsById>>;
   mintTx: Awaited<ReturnType<typeof blockfrost.txs>>;
+  history: Awaited<ReturnType<typeof blockfrost.assetsHistory>>;
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
@@ -29,10 +30,13 @@ export const getStaticProps: GetStaticProps<AssetPageProps> = async ({
 
   const asset = await blockfrost.assetsById(assetId);
   const mintTx = await blockfrost.txs(asset.initial_mint_tx_hash);
+  const history = await blockfrost.assetsHistory(asset.asset);
+
   return {
     props: {
       asset,
       mintTx,
+      history,
     },
   };
 };

@@ -20,7 +20,10 @@
       "@/utils/*": ["./src/utils/*"],
       "@lib/*": ["./lib/*"]
     },
-    "incremental": true
+    "incremental": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "typeRoots": ["./lib/declarations.d.ts"]
   },
   "exclude": ["node_modules", "infra"],
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"]

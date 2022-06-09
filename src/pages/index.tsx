@@ -28,20 +28,20 @@ export interface HomepageProps {
 export const getStaticProps: GetStaticProps<HomepageProps> = async () => {
   const latestBlock = await blockfrost.blocksLatest();
   const dailyTransactions = (await prisma.$queryRaw`
-    SELECT
-      date_trunc('day', to_timestamp(1596491091 + (b.slot - 4924800))) AS "day",
-      COUNT(*) AS "tx_count"
-    FROM
-      "Transaction" t
-    LEFT JOIN "Block" b ON
-      b.id = t.block_id
-    WHERE
-      b.slot > ${dateToSlot(moment().subtract(7, 'days').toDate())}
-    GROUP BY
-      1
-    ORDER BY
-      1
-    LIMIT 7;
+  SELECT
+    date_trunc('day', b."time") AS "day",
+    COUNT(*) AS "tx_count"
+  FROM
+    tx
+  LEFT JOIN "block" b ON
+    b.id = tx.block_id
+  WHERE
+    b.time > NOW() - INTERVAL '168 hours'
+  GROUP BY
+    1
+  ORDER BY
+    1
+  LIMIT 7;
   `) as any;
 
   const { data } = await axios.get('https://pool.pm/total.json');
