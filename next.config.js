@@ -15,9 +15,6 @@ if (process.env.NODE_ENV === 'development') {
 
 module.exports = {
   reactStrictMode: true,
-  siteUrl:
-    process.env.NEXT_PUBLIC_VERCEL_URL || 'https://explorer.asterium.dev',
-  generateRobotsTxt: true,
   webpack: (config) => {
     const customConfig = {
       experiments: {
