@@ -5,4 +5,4 @@ const config = {
   // ...other options
 };
 
-export default config;
+module.exports = config;
