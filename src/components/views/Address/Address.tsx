@@ -1,14 +1,4 @@
-import { Center, Container, Flex, Heading, Icon, Tag } from '@chakra-ui/react';
-
-import {
-  Pagination,
-  usePagination,
-  PaginationPage,
-  PaginationNext,
-  PaginationPrevious,
-  PaginationPageGroup,
-  PaginationContainer,
-} from '@ajna/pagination';
+import { Center, Container, Flex, Heading, Tag } from '@chakra-ui/react';
 
 import { AddressPageProps } from '@/pages/address/[address]';
 import DetailsTable from './components/DetailsTable';
@@ -16,7 +6,8 @@ import Transaction from './components/Transaction';
 import { useEffect, useState } from 'react';
 import { PAGE_SIZE } from '@/constants';
 import axios from '@/utils/axios';
-import { ChevronLeft, ChevronRight } from 'react-feather';
+import Paginator from '@/components/shared/Paginator';
+import { usePagination } from '@ajna/pagination';
 
 const Address: React.FC<AddressPageProps> = ({
   transactions: _transactions,
@@ -35,29 +26,28 @@ const Address: React.FC<AddressPageProps> = ({
 
   const [transactions, setTransactions] = useState(_transactions);
 
-  const { pages, pagesCount, currentPage, setCurrentPage, isDisabled } =
-    usePagination({
-      total: transactionCount,
-      limits: {
-        outer: 2,
-        inner: 2,
-      },
-      initialState: {
-        pageSize: PAGE_SIZE,
-        isDisabled: false,
-        currentPage: 1,
-      },
-    });
+  const pagination = usePagination({
+    total: transactionCount,
+    limits: {
+      outer: 2,
+      inner: 2,
+    },
+    initialState: {
+      pageSize: PAGE_SIZE,
+      isDisabled: false,
+      currentPage: 1,
+    },
+  });
 
   useEffect(() => {
     axios
       .get(`address/${address}/transactions`, {
         params: {
-          page: currentPage,
+          page: pagination.currentPage,
         },
       })
       .then(({ data }) => setTransactions(data));
-  }, [currentPage, address]);
+  }, [pagination.currentPage, address]);
 
   return (
     <Container maxW={'container.xl'} py="12">
@@ -91,31 +81,7 @@ const Address: React.FC<AddressPageProps> = ({
 
       {transactions.length < transactionCount && (
         <Center mt="4">
-          <Pagination
-            currentPage={currentPage}
-            pagesCount={pagesCount}
-            onPageChange={setCurrentPage}
-            isDisabled={isDisabled}
-          >
-            <PaginationContainer>
-              <PaginationPrevious mr="3">
-                <Icon as={ChevronLeft} />
-              </PaginationPrevious>
-              <PaginationPageGroup>
-                {pages.map((page) => (
-                  <PaginationPage
-                    key={`p_${page}`}
-                    page={page}
-                    isActive={currentPage === page}
-                    px="3"
-                  />
-                ))}
-              </PaginationPageGroup>
-              <PaginationNext ml="3">
-                <Icon as={ChevronRight} />
-              </PaginationNext>
-            </PaginationContainer>
-          </Pagination>
+          <Paginator {...pagination} />
         </Center>
       )}
     </Container>
