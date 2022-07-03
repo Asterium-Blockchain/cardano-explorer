@@ -1,21 +1,26 @@
+import { Center, Container, Flex, Heading, Icon, Tag } from '@chakra-ui/react';
+
 import {
-  Button,
-  Center,
-  Container,
-  Flex,
-  Heading,
-  Tag,
-} from '@chakra-ui/react';
+  Pagination,
+  usePagination,
+  PaginationPage,
+  PaginationNext,
+  PaginationPrevious,
+  PaginationPageGroup,
+  PaginationContainer,
+} from '@ajna/pagination';
 
 import { AddressPageProps } from '@/pages/address/[address]';
-import useStore from '@/store/useStore';
 import DetailsTable from './components/DetailsTable';
 import Transaction from './components/Transaction';
-import { useMemo } from 'react';
+import { useEffect, useState } from 'react';
+import { PAGE_SIZE } from '@/constants';
+import axios from '@/utils/axios';
+import { ChevronLeft, ChevronRight } from 'react-feather';
 
 const Address: React.FC<AddressPageProps> = ({
-  transactions,
-  hasMore,
+  transactions: _transactions,
+  transactionCount,
   addressData,
 }) => {
   const {
@@ -28,16 +33,31 @@ const Address: React.FC<AddressPageProps> = ({
     utxoCount,
   } = addressData;
 
-  const addressTransactions = useStore((state) => state.addressTransactions);
-  const isLoadingFetchMore = useStore(
-    (state) => state.isLoadingFetchMoreAddressTransactions,
-  );
-  const fetchMore = useStore((state) => state.fetchMoreAddressTransactions);
-  const fetchMoreWithAddress = () => fetchMore(address);
+  const [transactions, setTransactions] = useState(_transactions);
 
-  const allTransactions = useMemo(() => {
-    return [...transactions, ...addressTransactions];
-  }, [addressTransactions, transactions]);
+  const { pages, pagesCount, currentPage, setCurrentPage, isDisabled } =
+    usePagination({
+      total: transactionCount,
+      limits: {
+        outer: 2,
+        inner: 2,
+      },
+      initialState: {
+        pageSize: PAGE_SIZE,
+        isDisabled: false,
+        currentPage: 1,
+      },
+    });
+
+  useEffect(() => {
+    axios
+      .get(`address/${address}/transactions`, {
+        params: {
+          page: currentPage,
+        },
+      })
+      .then(({ data }) => setTransactions(data));
+  }, [currentPage, address]);
 
   return (
     <Container maxW={'container.xl'} py="12">
@@ -65,19 +85,37 @@ const Address: React.FC<AddressPageProps> = ({
         Transactions
       </Heading>
 
-      {allTransactions.map((transaction) => (
+      {transactions.map((transaction) => (
         <Transaction key={transaction.tx_hash} transaction={transaction} />
       ))}
 
-      {hasMore && (
-        <Center mt={10}>
-          <Button
-            variant={'outline'}
-            onClick={fetchMoreWithAddress}
-            isLoading={isLoadingFetchMore}
+      {transactions.length < transactionCount && (
+        <Center mt="4">
+          <Pagination
+            currentPage={currentPage}
+            pagesCount={pagesCount}
+            onPageChange={setCurrentPage}
+            isDisabled={isDisabled}
           >
-            Fetch more
-          </Button>
+            <PaginationContainer>
+              <PaginationPrevious mr="3">
+                <Icon as={ChevronLeft} />
+              </PaginationPrevious>
+              <PaginationPageGroup>
+                {pages.map((page) => (
+                  <PaginationPage
+                    key={`p_${page}`}
+                    page={page}
+                    isActive={currentPage === page}
+                    px="3"
+                  />
+                ))}
+              </PaginationPageGroup>
+              <PaginationNext ml="3">
+                <Icon as={ChevronRight} />
+              </PaginationNext>
+            </PaginationContainer>
+          </Pagination>
         </Center>
       )}
     </Container>

@@ -2,12 +2,12 @@ import { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 
 import { isAddress } from '@/utils/crypto/validation';
 import Address from '@/components/views/Address';
-import blockfrost from '@lib/blockfrost/index';
 import { getAddressStakeKey } from '@/utils/crypto';
 import { findAdaHandles } from '@/utils/blockchain/assetClasses';
 import { stateQueryClient } from '@lib/ogmios';
 import scrolls from '@lib/scrolls';
 import { connectToDatabase } from '@lib/mongo';
+import { PAGE_SIZE } from '@/constants';
 
 interface AddressData {
   stakeAddress: string;
@@ -19,8 +19,8 @@ interface AddressData {
   utxoCount: number;
 }
 export interface AddressPageProps {
-  transactions: Awaited<ReturnType<typeof blockfrost.addressesTransactions>>;
-  hasMore: boolean;
+  transactions: any[];
+  transactionCount: number;
   addressData: AddressData;
 }
 
@@ -34,6 +34,8 @@ export const getStaticPaths: GetStaticPaths = () => {
 export const getStaticProps: GetStaticProps<AddressPageProps> = async (req) => {
   await scrolls.connect();
 
+  const { db } = await connectToDatabase();
+
   const { address } = req.params as { address: string };
 
   if (!isAddress(address)) {
@@ -42,6 +44,37 @@ export const getStaticProps: GetStaticProps<AddressPageProps> = async (req) => {
       revalidate: 1,
     };
   }
+
+  const collection = db.collection('address_transactions');
+
+  const tot = await collection.countDocuments({ address });
+
+  const addressTxns = collection
+    .find(
+      {
+        address,
+      },
+      {
+        projection: {
+          tx_hash: 1,
+        },
+      },
+    )
+    .sort({
+      timestamp: -1,
+    })
+    .limit(PAGE_SIZE);
+
+  const cursor = await addressTxns.map((t) => t.tx_hash).toArray();
+
+  const transactions = await db
+    .collection('transactions')
+    .find({
+      hash: {
+        $in: cursor,
+      },
+    })
+    .toArray();
 
   const stakeAddress = getAddressStakeKey(address);
 
@@ -91,25 +124,12 @@ export const getStaticProps: GetStaticProps<AddressPageProps> = async (req) => {
     tokenCount = parseInt(cached.tokenCount, 10);
   }
 
-  // const transactions = await prisma.tx.findMany({
-  //   where: {},
-  //   take: 25,
-  //   page: 1,
-  // });
-
-  // const transactions = await blockfrost.addressesTransactions(address, {
-  //   count: 26,
-  //   page: 1,
-  // });
-
   await scrolls.disconnect();
 
   return {
     props: {
-      // transactions: transactions.slice(0, 25),
-      // hasMore: transactions.length === 26,
-      transactions: [],
-      hasMore: false,
+      transactions: JSON.parse(JSON.stringify(transactions)),
+      transactionCount: tot,
       addressData: {
         stakeAddress: stakeAddress || '',
         lovelaceBalance: lovelace.toString(),

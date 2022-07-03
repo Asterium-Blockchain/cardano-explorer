@@ -16,3 +16,5 @@ export const SUPPORTED_WALLETS: WalletName[] = [
 export const ADA_MAX_SUPPLY = BigInt('45000000000000000');
 
 export const EPOCH_DURATION = 432000;
+
+export const PAGE_SIZE = 25;

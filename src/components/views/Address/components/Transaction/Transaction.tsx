@@ -8,7 +8,7 @@ interface TransactionProps {
 }
 
 const Transaction: React.FC<TransactionProps> = ({ transaction }) => {
-  const { tx_hash: hash, block_time: blockTime } = transaction;
+  const { hash, timestamp } = transaction;
   return (
     <Box bgColor={'gray.700'} borderRadius="md" p={'5'} my="3">
       <Link href={`/transaction/${hash}`}>
@@ -24,7 +24,7 @@ const Transaction: React.FC<TransactionProps> = ({ transaction }) => {
         </a>
       </Link>
       <Text color={'gray.500'}>
-        {moment(blockTime * 1000).format('MM/DD HH:mm:ss')}
+        {moment(new Date(timestamp)).format('YYYY/MM/DD HH:mm:ss')}
       </Text>
     </Box>
   );

@@ -1,10 +1,10 @@
-import blockfrost from '@lib/blockfrost';
 import { isAddress } from '@/utils/crypto/validation';
 import { NextApiHandler } from 'next';
+import { connectToDatabase } from '@lib/mongo';
+import { PAGE_SIZE } from '@/constants';
 
 export interface AddressTransactionsResponse {
-  transactions: Awaited<ReturnType<typeof blockfrost.addressesTransactions>>;
-  hasMore: boolean;
+  transactions: any[];
 }
 
 const handler: NextApiHandler = async (req, res) => {
@@ -16,16 +16,39 @@ const handler: NextApiHandler = async (req, res) => {
       error: 'Invalid parameters',
     });
   }
+  const { db } = await connectToDatabase();
 
-  const addressTxns = await blockfrost.addressesTransactions(address, {
-    count: 26,
-    page: pageNum,
-  });
+  const collection = db.collection('address_transactions');
 
-  res.status(200).json({
-    transactions: addressTxns,
-    hasMore: addressTxns.length === 26,
-  });
+  const addressTxns = collection
+    .find(
+      {
+        address,
+      },
+      {
+        projection: {
+          tx_hash: 1,
+        },
+      },
+    )
+    .sort({
+      timestamp: -1,
+    })
+    .skip(PAGE_SIZE * (pageNum - 1))
+    .limit(PAGE_SIZE);
+
+  const cursor = await addressTxns.map((t) => t.tx_hash).toArray();
+
+  const transactions = await db
+    .collection('transactions')
+    .find({
+      hash: {
+        $in: cursor,
+      },
+    })
+    .toArray();
+
+  res.status(200).json(JSON.parse(JSON.stringify(transactions)));
 };
 
 export default handler;
