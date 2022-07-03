@@ -25,3 +25,12 @@ export interface CardanoApi {
 }
 
 export type Amount = { unit: string; quantity: string }[];
+
+export interface MongoAsset {
+  _id: string;
+  asset_ascii: string;
+  fingerprint: string;
+  onchain_metadata: Record<string, any>;
+  policy: string;
+  supply: number;
+}

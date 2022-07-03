@@ -1,19 +1,38 @@
 import blockfrost from '@lib/blockfrost';
-import { Box, Container, Flex, Heading, Tag, Text } from '@chakra-ui/react';
+import {
+  Box,
+  Container,
+  Flex,
+  Heading,
+  Table,
+  TableContainer,
+  Tag,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tr,
+} from '@chakra-ui/react';
 import DetailsTable from './components/DetailsTable';
 import { TransactionInput } from './components/TransactionInput/TransactionInput';
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react';
+import { Amount } from '@/types';
+import { hex2a } from '@/utils/strings';
+import Link from '@/components/shared/Link';
 
 interface TransactionProps {
   transaction: Awaited<ReturnType<typeof blockfrost.txs>>;
   utxos: Awaited<ReturnType<typeof blockfrost.txsUtxos>>;
   metadata: Awaited<ReturnType<typeof blockfrost.txsMetadata>>;
+  mintAmount: Amount | null;
 }
 
 const Transaction: React.FC<TransactionProps> = ({
   transaction,
   utxos,
   metadata,
+  mintAmount,
 }) => {
   return (
     <Container size={'container.xl'} py={'12'} maxW={'container.xl'}>
@@ -22,7 +41,7 @@ const Transaction: React.FC<TransactionProps> = ({
           Transaction
         </Heading>
         {utxos.inputs.find((i) => !!i.data_hash) && (
-          <Tag size={'sm'} mt="1" colorScheme={'cyan'}>
+          <Tag size={'sm'} mt="1" mr="2" colorScheme={'cyan'}>
             Consuming from a script
           </Tag>
         )}
@@ -39,6 +58,7 @@ const Transaction: React.FC<TransactionProps> = ({
         <TabList>
           <Tab>Body</Tab>
           <Tab>Metadata</Tab>
+          {mintAmount && <Tab>Mint</Tab>}
         </TabList>
         <TabPanels
           border={'1px'}
@@ -106,6 +126,48 @@ const Transaction: React.FC<TransactionProps> = ({
               </Text>
             </Box>
           </TabPanel>
+          {mintAmount && (
+            <TabPanel>
+              <TableContainer
+                border={'1px'}
+                borderColor="gray.700"
+                borderRadius={'md'}
+                mt="8"
+                borderBottom={'none'}
+              >
+                <Table>
+                  <Thead>
+                    <Tr>
+                      <Th>Policy ID</Th>
+                      <Th>Asset name</Th>
+                      <Th>Mint amount</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {mintAmount.map(({ quantity, unit }) => (
+                      <Tr key={`${quantity}_${unit}`}>
+                        <Td>
+                          <Link href={`/tokenPolicy/${unit.slice(0, 56)}`} alt>
+                            {unit.slice(0, 56)}
+                          </Link>
+                        </Td>
+                        <Td>
+                          <Link href={`/token/${unit}`}>
+                            <Text as="code">{hex2a(unit.slice(56))}</Text>
+                          </Link>
+                        </Td>
+                        <Td>
+                          <Text as="code">
+                            {BigInt(quantity).toLocaleString()}
+                          </Text>
+                        </Td>
+                      </Tr>
+                    ))}
+                  </Tbody>
+                </Table>
+              </TableContainer>
+            </TabPanel>
+          )}
         </TabPanels>
       </Tabs>
     </Container>

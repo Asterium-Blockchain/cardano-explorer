@@ -14,7 +14,7 @@ import {
   Tag,
   Text,
 } from '@chakra-ui/react';
-import Link from 'next/link';
+import Link from '@/components/shared/Link';
 
 interface TransactionInputProps {
   address: string;
@@ -48,16 +48,8 @@ const TransactionInput: React.FC<TransactionInputProps> = ({
         </Stat>
 
         <Heading size={'sm'}>
-          <Link href={`/address/${address}`} passHref>
-            <a>
-              <Text
-                as="code"
-                textColor={'purple.400'}
-                _hover={{ textColor: 'purple.300' }}
-              >
-                {truncateString(address, 38, 'middle')}
-              </Text>
-            </a>
+          <Link href={`/address/${address}`}>
+            {truncateString(address, 38, 'middle')}
           </Link>
           {datumHash && (
             <Tag colorScheme={'pink'} size="sm" ml={'2'}>
@@ -74,10 +66,8 @@ const TransactionInput: React.FC<TransactionInputProps> = ({
             mt="2"
             _hover={{ textDecor: 'underline' }}
           >
-            <Link href={`/transaction/${txHash}`}>
-              <a>
-                {truncateString(txHash, 38, 'middle')}#{txIndex}
-              </a>
+            <Link href={`/transaction/${txHash}`} alt mt="2">
+              {truncateString(txHash, 38, 'middle')}#{txIndex}
             </Link>
           </Text>
         )}
@@ -97,7 +87,9 @@ const TransactionInput: React.FC<TransactionInputProps> = ({
             <AccordionPanel>
               {filteredAmount.map(({ quantity, unit }) => (
                 <Badge key={unit} display="inline-block" m={'2'}>
-                  {quantity} {hex2a(unit.slice(56))}
+                  <Link href={`/token/${unit}`} alt>
+                    {quantity} {hex2a(unit.slice(56))}
+                  </Link>
                 </Badge>
               ))}
             </AccordionPanel>

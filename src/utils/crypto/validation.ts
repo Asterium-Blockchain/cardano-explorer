@@ -64,7 +64,7 @@ export const getUrlFromType = (type: QueryType, value: string) => {
     case 'TX_HASH':
       return '/transaction/' + value;
     case 'POLICY_ID':
-      return '/policy/' + value;
+      return '/tokenPolicy/' + value;
     case 'ASSET_ID':
       return '/token/' + value;
     case 'ADDRESS':

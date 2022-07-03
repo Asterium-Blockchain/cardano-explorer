@@ -23,8 +23,7 @@ const Image: React.FC<ImageProps> = ({ src, alt, width, height }) => {
   return (
     <Box
       className={styles.imageWrapper}
-      w={width}
-      h={height}
+      style={{ width, height }}
       display={'flex'}
       alignItems="center"
       border={isError ? '1px' : undefined}
@@ -32,7 +31,10 @@ const Image: React.FC<ImageProps> = ({ src, alt, width, height }) => {
       borderRadius={'md'}
     >
       {!loaded && (
-        <Skeleton w={width} h={height} className={styles.imagePlaceholder} />
+        <Skeleton
+          style={{ width, height }}
+          className={styles.imagePlaceholder}
+        />
       )}
       {isError && <Icon as={CameraOff} m="auto" color={'gray.600'} />}
       <img
