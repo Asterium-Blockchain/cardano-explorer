@@ -1,4 +1,6 @@
 import { QueryType } from '@/types';
+import * as CardanoWasmBrowser from '@emurgo/cardano-serialization-lib-browser';
+import base58 from 'base-58';
 
 const isHex = (value: string) => value.match(/^[0-9a-fA-F]+$/);
 
@@ -11,12 +13,27 @@ export const isPolicyID = (value: any): boolean =>
 export const isTxHash = (value: any) =>
   !!(typeof value === 'string' && value.length === 64 && isHex(value));
 
-export const isAddress = (value: any) =>
-  !!(
-    typeof value === 'string' &&
-    (value.length === 103 || value.length === 58) &&
-    value.match(/addr1[a-z0-9]+/)
-  );
+export const isByronAddress = (address: string) => {
+  try {
+    const decodedAddress = CardanoWasmBrowser.ByronAddress.from_bytes(
+      base58.decode(address),
+    ).to_address();
+    return !!decodedAddress;
+  } catch (error) {
+    return false;
+  }
+};
+
+export const isAddress = (address: string): boolean => {
+  try {
+    const isValid = CardanoWasmBrowser.Address.from_bech32(
+      address.toUpperCase(),
+    );
+    return !!isValid;
+  } catch (error) {
+    return isByronAddress(address);
+  }
+};
 
 export const isStakeKey = (value: any) =>
   !!(
