@@ -1205,6 +1205,11 @@
   resolved "https://registry.yarnpkg.com/@ctrl/tinycolor/-/tinycolor-3.4.1.tgz#75b4c27948c81e88ccd3a8902047bcd797f38d32"
   integrity sha512-ej5oVy6lykXsvieQtqZxCOaLT+xD4+QNarq78cIYISHmZXshCvROLudpQN3lfL8G0NL7plMSSK+zlyvCaIJ4Iw==
 
+"@dcspark/cardano-multiplatform-lib-browser@0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@dcspark/cardano-multiplatform-lib-browser/-/cardano-multiplatform-lib-browser-0.3.0.tgz#4eae8e5625e27d5f9496c74c2582d87f05f72f93"
+  integrity sha512-EMMHIWlZMATRUhan0akEtSz/9wazMjpKFZh3udeTvtZpT58r14Y9buSJ9XaoNwHBifYrlS/Ygh6UgVIYw2YLfw==
+
 "@emotion/babel-plugin@^11.7.1":
   version "11.9.2"
   resolved "https://registry.yarnpkg.com/@emotion/babel-plugin/-/babel-plugin-11.9.2.tgz#723b6d394c89fb2ef782229d92ba95a740576e95"
@@ -1317,11 +1322,6 @@
   version "0.2.5"
   resolved "https://registry.yarnpkg.com/@emotion/weak-memoize/-/weak-memoize-0.2.5.tgz#8eed982e2ee6f7f4e44c253e12962980791efd46"
   integrity sha512-6U71C2Wp7r5XtFtQzYrW5iKFT67OixrSxjI4MptCHzdSVlgabczzqLe0ZSgnub/5Kp4hSbpDB1tMytZY9pwxxA==
-
-"@emurgo/cardano-serialization-lib-browser@10.2.0":
-  version "10.2.0"
-  resolved "https://registry.yarnpkg.com/@emurgo/cardano-serialization-lib-browser/-/cardano-serialization-lib-browser-10.2.0.tgz#5eb1d1b579072598e4911e5d8ae23f63e22e7b28"
-  integrity sha512-b4RrWtC5y8+bjKp9sFo8IWXg+xIatXoUq4YcqFDReDN6dpHRjLlOJv7h9Da6VA5GXvLQy6vOFuieAZJFGng9FQ==
 
 "@emurgo/cardano-serialization-lib-nodejs@^10.0.4":
   version "10.0.4"
