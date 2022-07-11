@@ -1,6 +1,11 @@
 import { QueryType } from '@/types';
-import * as CardanoWasmBrowser from '@emurgo/cardano-serialization-lib-browser';
-import base58 from 'base-58';
+
+import {
+  Address,
+  ByronAddress,
+  EnterpriseAddress,
+} from '@dcspark/cardano-multiplatform-lib-browser';
+import Base58 from 'base-58';
 
 const isHex = (value: string) => value.match(/^[0-9a-fA-F]+$/);
 
@@ -15,25 +20,32 @@ export const isTxHash = (value: any) =>
 
 export const isByronAddress = (address: string) => {
   try {
-    const decodedAddress = CardanoWasmBrowser.ByronAddress.from_bytes(
-      base58.decode(address),
-    ).to_address();
-    return !!decodedAddress;
+    const decodedAddress = ByronAddress.from_address(
+      Address.from_bytes(Base58.decode(address)),
+    );
+    return (
+      !!decodedAddress &&
+      decodedAddress.network_id() === Number(process.env.NETWORK_ID || 1)
+    );
   } catch (error) {
     return false;
   }
 };
 
-export const isAddress = (address: string): boolean => {
+export const isShellyAddress = (address: string) => {
   try {
-    const isValid = CardanoWasmBrowser.Address.from_bech32(
-      address.toUpperCase(),
+    const decodedAddress = Address.from_bech32(address);
+    return (
+      !!decodedAddress &&
+      decodedAddress.network_id() === Number(process.env.NETWORK_ID || 1)
     );
-    return !!isValid;
   } catch (error) {
-    return isByronAddress(address);
+    return false;
   }
 };
+
+export const isAddress = (address: string) =>
+  isShellyAddress(address) || isByronAddress(address);
 
 export const isStakeKey = (value: any) =>
   !!(
