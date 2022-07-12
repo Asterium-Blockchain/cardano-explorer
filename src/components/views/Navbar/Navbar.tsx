@@ -14,16 +14,21 @@ import {
 } from '@chakra-ui/react';
 import { useClickAway } from 'ahooks';
 import Link from 'next/link';
-import { useEffect, useRef } from 'react';
+import { ChangeEvent, useEffect, useRef } from 'react';
 import { DebounceInput } from 'react-debounce-input';
 
 import SearchResult from './components/SearchResult';
-import { decodeType, getUrlFromType } from '@/utils/crypto/validation';
+import {
+  decodeType,
+  deduceType,
+  getUrlFromType,
+} from '@/utils/crypto/validation';
 import { truncateString } from '@/utils/strings';
 import useAdaPrice from '@/hooks/useAdaPrice';
 import useBlockchainLoad from '@/hooks/useBlockhainLoad';
 import WalletConnector from './components/WalletConnector';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 
 const getBlockchainLoadColor = (
   load: number | null,
@@ -41,6 +46,7 @@ const getBlockchainLoadColor = (
 };
 
 const Navbar = () => {
+  const router = useRouter();
   const searchedVal = useStore((state) => state.searchedVal);
   const search = useStore((state) => state.search);
   const resetSearch = useStore((state) => state.resetSearch);
@@ -114,6 +120,11 @@ const Navbar = () => {
               minLength={2}
               variant="filled"
               onChange={updateSearchVal}
+              onKeyUp={(e) => {
+                if (e.key === 'Enter' && element?.type) {
+                  router.push(getUrlFromType(element.type, searchedVal) || '#');
+                }
+              }}
             />
             {showSearchElement &&
               (isLoadingSearch ||

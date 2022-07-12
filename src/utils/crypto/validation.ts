@@ -62,10 +62,10 @@ export const deduceType = (value: any) => {
     type = 'POLICY_ID';
   } else if (isAssetID(value)) {
     type = 'ASSET_ID';
-  } else if (isAddress(value)) {
-    type = 'ADDRESS';
   } else if (isStakeKey(value)) {
     type = 'STAKE_KEY';
+  } else if (isAddress(value)) {
+    type = 'ADDRESS';
   }
   return type;
 };
