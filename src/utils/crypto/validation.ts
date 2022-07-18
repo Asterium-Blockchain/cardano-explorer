@@ -1,5 +1,11 @@
 import { QueryType } from '@/types';
 
+import {
+  Address,
+  ByronAddress,
+} from '@dcspark/cardano-multiplatform-lib-browser';
+import Base58 from 'base-58';
+
 const isHex = (value: string) => value.match(/^[0-9a-fA-F]+$/);
 
 export const isAssetID = (value: any): boolean =>
@@ -11,12 +17,34 @@ export const isPolicyID = (value: any): boolean =>
 export const isTxHash = (value: any) =>
   !!(typeof value === 'string' && value.length === 64 && isHex(value));
 
-export const isAddress = (value: any) =>
-  !!(
-    typeof value === 'string' &&
-    (value.length === 103 || value.length === 58) &&
-    value.match(/addr1[a-z0-9]+/)
-  );
+export const isByronAddress = (address: string) => {
+  try {
+    const decodedAddress = ByronAddress.from_address(
+      Address.from_bytes(Base58.decode(address)),
+    );
+    return (
+      !!decodedAddress &&
+      decodedAddress.network_id() === Number(process.env.NETWORK_ID || 1)
+    );
+  } catch (error) {
+    return false;
+  }
+};
+
+export const isShellyAddress = (address: string) => {
+  try {
+    const decodedAddress = Address.from_bech32(address);
+    return (
+      !!decodedAddress &&
+      decodedAddress.network_id() === Number(process.env.NETWORK_ID || 1)
+    );
+  } catch (error) {
+    return false;
+  }
+};
+
+export const isAddress = (address: string) =>
+  isShellyAddress(address) || isByronAddress(address);
 
 export const isStakeKey = (value: any) =>
   !!(

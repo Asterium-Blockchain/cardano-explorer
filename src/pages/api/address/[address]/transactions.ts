@@ -11,7 +11,7 @@ const handler: NextApiHandler = async (req, res) => {
   const { address, page } = req.query;
   const pageNum = parseInt(typeof page === 'string' ? page : '', 10);
 
-  if (!isAddress(address) || typeof address !== 'string' || isNaN(pageNum)) {
+  if (typeof address !== 'string' || !isAddress(address) || isNaN(pageNum)) {
     return res.status(400).json({
       error: 'Invalid parameters',
     });
