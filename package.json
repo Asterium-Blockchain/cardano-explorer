@@ -24,7 +24,7 @@
   },
   "lint-staged": {
     "./src/**/*.{ts,js,jsx,tsx}": [
-      "yarn lint --fix",
+      "eslint --fix",
       "yarn format"
     ]
   },
