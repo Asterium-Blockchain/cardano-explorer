@@ -1,3 +1,3 @@
-import { DetailsTable } from './DetailsTable';
+import DetailsTable from './DetailsTable';
 
 export default DetailsTable;

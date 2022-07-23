@@ -14,12 +14,13 @@ import {
   Thead,
   Tr,
 } from '@chakra-ui/react';
-import DetailsTable from './components/DetailsTable';
 import { TransactionInput } from './components/TransactionInput/TransactionInput';
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react';
 import { Amount } from '@/types';
-import { hex2a } from '@/utils/strings';
+import { bytesToSize, hex2a } from '@/utils/strings';
 import Link from '@/components/shared/Link';
+import moment from 'moment';
+import DetailsTable from '@/components/shared/DetailsTable';
 
 interface TransactionProps {
   transaction: Awaited<ReturnType<typeof blockfrost.txs>>;
@@ -34,6 +35,24 @@ const Transaction: React.FC<TransactionProps> = ({
   metadata,
   mintAmount,
 }) => {
+  const rows = [
+    { key: 'hash', header: 'Hash', value: transaction.hash },
+    {
+      key: 'timestamp',
+      header: 'Timestamp',
+      value: moment(transaction.block_time * 1000).format(
+        'dddd, MMMM Do YYYY, h:mm:ss A',
+      ),
+    },
+    {
+      key: 'block',
+      header: 'Block',
+      value: transaction.block_height.toLocaleString(),
+    },
+    { key: 'slot', header: 'Slot', value: transaction.slot.toLocaleString() },
+    { key: 'fees', header: 'Fees', value: transaction.fees, isAda: true },
+    { key: 'size', header: 'Size', value: bytesToSize(transaction.size) },
+  ];
   return (
     <Container size={'container.xl'} py={'12'} maxW={'container.xl'}>
       <Flex>
@@ -52,7 +71,7 @@ const Transaction: React.FC<TransactionProps> = ({
         )}
       </Flex>
 
-      <DetailsTable transaction={transaction} />
+      <DetailsTable rows={rows} />
 
       <Tabs variant={'enclosed'} mt="6">
         <TabList>

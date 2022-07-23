@@ -1,6 +1,4 @@
-import { toADA } from '@/utils/crypto';
 import {
-  Badge,
   Table,
   TableContainer,
   Tbody,
@@ -10,8 +8,9 @@ import {
   Tr,
 } from '@chakra-ui/react';
 import Link from '../Link';
+import AdaText from './components/AdaText';
 
-type Value = string | number | boolean;
+type Value = string;
 
 export interface IRow {
   header: string;
@@ -20,6 +19,7 @@ export interface IRow {
   render?: () => JSX.Element;
   hide?: boolean;
   link?: string;
+  isAda?: boolean;
 }
 
 interface DetailsTableProps {
@@ -45,11 +45,14 @@ const DetailsTable: React.FC<DetailsTableProps> = ({ rows }) => {
                 <Th>{row.header}</Th>
                 <Td textAlign={'right'}>
                   {row.render && row.render()}
-                  {!row.render && !row.link && (
-                    <Text as="code">{row.value}</Text>
+                  {!row.render && row.isAda && (
+                    <AdaText lovelace={row.value || '0'} />
                   )}
-                  {!row.render && row.link && (
-                    <Link href={row.link}>{row.value}</Link>
+                  {!row.render && !row.link && !row.isAda && (
+                    <Text as="code">{row.value || ''}</Text>
+                  )}
+                  {!row.render && !row.isAda && row.link && (
+                    <Link href={row.link}>{row.value || ''}</Link>
                   )}
                 </Td>
               </Tr>
@@ -61,4 +64,4 @@ const DetailsTable: React.FC<DetailsTableProps> = ({ rows }) => {
   );
 };
 
-export { DetailsTable };
+export default DetailsTable;

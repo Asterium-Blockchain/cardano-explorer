@@ -1,13 +1,15 @@
 import { Center, Container, Flex, Heading, Tag } from '@chakra-ui/react';
+import { Badge, Text } from '@chakra-ui/react';
 
 import { AddressPageProps } from '@/pages/address/[address]';
-import DetailsTable from './components/DetailsTable';
 import Transaction from './components/Transaction';
 import { useEffect, useState } from 'react';
 import { PAGE_SIZE } from '@/constants';
 import axios from '@/utils/axios';
 import Paginator from '@/components/shared/Paginator';
 import { usePagination } from '@ajna/pagination';
+import DetailsTable from '@/components/shared/DetailsTable';
+import { toADA } from '@/utils/crypto';
 
 const Address: React.FC<AddressPageProps> = ({
   transactions: _transactions,
@@ -49,6 +51,41 @@ const Address: React.FC<AddressPageProps> = ({
       .then(({ data }) => setTransactions(data));
   }, [pagination.currentPage, address]);
 
+  const rows = [
+    { key: 'address', header: 'Bech32', value: address },
+    {
+      key: 'stakeKey',
+      header: 'Stake Key',
+      value: stakeAddress,
+    },
+    {
+      key: 'balance',
+      header: 'Balance',
+      value: lovelaceBalance,
+      isAda: true,
+    },
+    {
+      key: 'nativeTokens',
+      header: `Native token${tokenCount !== 1 && 's'}`,
+      value: tokenCount.toLocaleString(),
+    },
+    { key: 'utxos', header: 'UTxOs', value: utxoCount.toLocaleString() },
+    {
+      key: 'adaHandles',
+      header: 'Ada Handles',
+      hide: adaHandles.length === 0,
+      render: () => (
+        <>
+          {adaHandles.map((handle) => (
+            <Badge as="code" colorScheme={'orange'} key={handle} ml="2">
+              ${handle}
+            </Badge>
+          ))}
+        </>
+      ),
+    },
+  ];
+
   return (
     <Container maxW={'container.xl'} py="12">
       <Flex>
@@ -62,14 +99,7 @@ const Address: React.FC<AddressPageProps> = ({
         )}
       </Flex>
 
-      <DetailsTable
-        address={address}
-        balance={lovelaceBalance}
-        stakeKey={stakeAddress}
-        tokenCount={tokenCount}
-        adaHandles={adaHandles}
-        utxoCount={utxoCount}
-      />
+      <DetailsTable rows={rows} />
 
       <Heading size="md" mt="8" mb="6">
         Transactions
