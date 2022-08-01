@@ -15,15 +15,20 @@ if (process.env.NODE_ENV === 'development') {
 
 module.exports = {
   reactStrictMode: true,
-  webpack: (config) => {
+  webpack: (config, { isServer }) => {
     const customConfig = {
       experiments: {
         asyncWebAssembly: true,
         topLevelAwait: true,
-        layers: true,
-      },
+        layers: true
+      }
     };
-
+    if (isServer) {
+      config.output.webassemblyModuleFilename = './../static/wasm/[modulehash].wasm';
+    } else {
+      config.output.webassemblyModuleFilename = 'static/wasm/[modulehash].wasm';
+    }
+    config.optimization.moduleIds = 'named';
     return { ...config, ...customConfig };
-  },
+  }
 };
